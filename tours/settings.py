@@ -25,7 +25,7 @@ SECRET_KEY = '_e1u$fy%z2^4#27x!_-p#-jt2)p6r&r^#)=ye^&9e3++q7=aw!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '138.68.20.219', 'tours.bruinmobile.com']
 
 
 # Application definition
@@ -75,8 +75,12 @@ WSGI_APPLICATION = 'tours.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'tours',
+        'USER': 'toursuser',
+        'PASSWORD': 'bruin111',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -118,3 +122,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
