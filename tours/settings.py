@@ -75,12 +75,14 @@ WSGI_APPLICATION = 'tours.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'tours',
-        'USER': 'toursuser',
-        'PASSWORD': 'bruin111',
-        'HOST': 'localhost',
-        'PORT': '',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#        'ENGINE': 'django.db.backends.mysql',
+#        'NAME': 'tours',
+#        'USER': 'toursuser',
+#        'PASSWORD': 'bruin111',
+#        'HOST': 'localhost',
+#        'PORT': '',
     }
 }
 
