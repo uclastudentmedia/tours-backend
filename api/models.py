@@ -14,6 +14,9 @@ class Landmark(models.Model):
     # se_coord_long = models.FloatField()
     text_description = models.TextField()
 
+    def __str__(self):
+        return self.name
+
 class Picture(models.Model):
     landmark = models.ForeignKey(Landmark, on_delete=models.CASCADE)
     url = models.CharField(max_length=200)
