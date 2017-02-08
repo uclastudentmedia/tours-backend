@@ -1,1 +1,10 @@
-<h1>Landmark List</h1>
+[
+	{% for landmark in landmark_list %}
+		{
+			"id": {{landmark.id}},
+			"name": "{{landmark.name}}",
+			"ctr_coord_lat": {{landmark.ctr_coord_lat}},
+			"ctr_coord_long": {{landmark.ctr_coord_long}}
+		},
+	{% endfor %}
+]
