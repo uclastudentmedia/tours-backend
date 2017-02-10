@@ -40,9 +40,18 @@ def get_data_for(location_id):
     return ret_obj
 
 def main():
+    Landmark.objects.all().delete()
     for id in range(1, 413):
-        get_data_for(id)
-    return
+        data = get_data_for(id)
+        try:
+            landmark = Landmark.objects.create(id=data['id'],
+                                               name=data['name'],
+                                               ctr_coord_lat=data['lat'],
+                                               ctr_coord_long=data['long'],
+                                               text_description=data['note'])
+            landmark.save()
+        except TypeError:
+            pass
 
 if __name__ == "__main__":
     main()
