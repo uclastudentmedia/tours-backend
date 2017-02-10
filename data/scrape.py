@@ -1,6 +1,7 @@
 import urllib2
 import sys
 from bs4 import BeautifulSoup
+from api.models import Landmark
 
 def get_page(location_id):
     # returns xml data from the endpoint for a location id
