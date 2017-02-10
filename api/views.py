@@ -13,8 +13,8 @@ def index(request):
 def landmark_list(request):
     landmarks = Landmark.objects.values('id',
                                         'name',
-                                        'ctr_coord_lat',
-                                        'ctr_coord_long')
+                                        'lat',
+                                        'long')
     
     
     return JsonResponse({

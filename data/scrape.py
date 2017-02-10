@@ -47,8 +47,8 @@ def main():
         try:
             landmark = Landmark.objects.create(id=data['id'],
                                                name=data['name'],
-                                               ctr_coord_lat=data['lat'],
-                                               ctr_coord_long=data['long'],
+                                               lat=data['lat'],
+                                               long=data['long'],
                                                text_description=data['note'])
             landmark.save()
         except TypeError:
