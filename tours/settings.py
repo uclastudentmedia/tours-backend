@@ -25,7 +25,14 @@ SECRET_KEY = '_e1u$fy%z2^4#27x!_-p#-jt2)p6r&r^#)=ye^&9e3++q7=aw!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '138.68.20.219', 'tours.bruinmobile.com']
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '[::1]',
+    '138.68.20.219',
+    'tours.bruinmobile.com',
+    'testserver',
+]
 
 
 # Application definition
