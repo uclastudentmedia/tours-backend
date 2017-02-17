@@ -27,6 +27,11 @@ def get_data_for(location_id):
     note = xml_data.note.string
     if note is None:
         note = "No description right now for this location."
+    category_data = xml_data.categories.category
+    cat_id = None
+    if category_data is not None:
+        cat_id = int(category_data["cat_id"])
+    print cat_id
     #print "name is", landmark_name
     #print "lat =", coordinates['y'], "long =", coordinates['x']
     #print "Note is: ", note 
@@ -35,7 +40,8 @@ def get_data_for(location_id):
             "name": landmark_name,
             "lat": coordinates['y'],
             "long": coordinates['x'],
-            "note": note
+            "note": note,
+            "cat_id": cat_id
     }
     print ret_obj
     return ret_obj
@@ -45,7 +51,19 @@ def main():
     for id in range(1, 413):
         data = get_data_for(id)
         try:
-            landmark = Landmark.objects.create(id=data['id'],
+            if data is None:
+                continue
+            if data['cat_id'] is not None:
+                cat_obj = Category.objects.filter(id=data['cat_id']).first()
+                print cat_obj
+                landmark = Landmark.objects.create(id=data['id'],
+                                               name=data['name'],
+                                               lat=data['lat'],
+                                               long=data['long'],
+                                               text_description=data['note'],
+                                               category=cat_obj)
+            else:
+                landmark = Landmark.objects.create(id=data['id'],
                                                name=data['name'],
                                                lat=data['lat'],
                                                long=data['long'],
