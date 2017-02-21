@@ -36,4 +36,3 @@ class CategoryTest(TestCase):
         l.category = self.category
         l.save()
         self.assertEqual(Landmark.objects.get(id=l.id).category, self.category)
-        print(Category.objects.all())
