@@ -3,6 +3,7 @@ from django.views import generic
 from django.http import JsonResponse
 from django.forms.models import model_to_dict
 from django.http import Http404
+from django.db.models import F
 
 from .models import Landmark, Category
 
@@ -11,13 +12,12 @@ def index(request):
     return render(request, 'api/index.html', context)
 
 def landmark_list(request):
-    landmarks = Landmark.objects.values('id',
-                                        'name',
-                                        'lat',
-                                        'long',
-                                        'category')
-    
-    
+    queryset = Landmark.objects.annotate(category_id=F('category__category_id'))
+    landmarks = queryset.values('id',
+                                'name',
+                                'lat',
+                                'long',
+                                'category_id')
     return JsonResponse({
         "results": list(landmarks)
     })

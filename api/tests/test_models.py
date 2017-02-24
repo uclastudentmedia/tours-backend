@@ -11,7 +11,8 @@ class CategoryTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.category = Category.objects.create(name='', sort_order=0)
+        cls.category = Category.objects.create(name='', sort_order=0,
+                                               category_id=1001)
 
     def setUp(self):
         pass

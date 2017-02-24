@@ -45,7 +45,7 @@ class ApiLandmarkListTest(TestCase):
     def test_included_fields(self):
         landmark = self.results[0]
         # this endpoint should give basic data, including coords and name
-        for attr in ['id', 'lat', 'long', 'name', 'category']:
+        for attr in ['id', 'lat', 'long', 'name', 'category_id']:
             landmark[attr]
         # it should not give detailed data, like text descriptions or pictures
         for attr in ['text_description']:
