@@ -1,6 +1,6 @@
 from api.models import Category, Landmark
 from data.category_scraper import get_each_category
-from data.landmark_scraper import get_landmark_data
+from data.landmark_scraper import get_landmark
 from data.cat_id_scraper import get_location_from_cat
 
 def scrape():
@@ -17,5 +17,5 @@ def scrape():
         for landmark_id in landmark_ids:
             if not Landmark.objects.filter(id=landmark_id).exists():
                 print("Landmark " + str(landmark_id))
-                landmark = get_landmark_data(landmark_id)
+                landmark = get_landmark(landmark_id)
                 landmark.save()
