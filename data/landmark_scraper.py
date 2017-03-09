@@ -49,4 +49,7 @@ def main():
     for id in range(1, 100000):
         print("Landmark " + str(id))
         landmark = get_landmark(id)
-        landmark.save()
+        try:
+            landmark.save()
+        except AttributeError:
+            pass
