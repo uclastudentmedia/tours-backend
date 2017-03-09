@@ -47,5 +47,6 @@ def get_landmark(location_id):
 def main():
     Landmark.objects.all().delete()
     for id in range(1, 100000):
+        print("Landmark " + str(id))
         landmark = get_landmark(id)
         landmark.save()
