@@ -12,7 +12,7 @@ def get_page(location_id):
     soup = BeautifulSoup(ret_xml, "lxml")
     return soup.location # all data is under a <location>
 
-def get_data_for(location_id):
+def get_landmark_data(location_id):
     # returns object for location id, None if error
     xml_data = get_page(location_id)
     if xml_data is None:
@@ -49,7 +49,7 @@ def get_data_for(location_id):
 def main():
     Landmark.objects.all().delete()
     for id in range(1, 413):
-        data = get_data_for(id)
+        data = get_landmark_data(id)
         try:
             if data is None:
                 continue
@@ -71,5 +71,3 @@ def main():
             landmark.save()
         except TypeError:
             pass
-
-main()

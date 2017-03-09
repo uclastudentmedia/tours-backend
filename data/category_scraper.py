@@ -1,12 +1,12 @@
 from bs4 import BeautifulSoup
-import urllib.request
+import urllib2
 import sys
 from api.models import Category
 
 # returns everyting inside the categories tag
 def get_categories():
     url="http://space.admin.ucla.edu/locations_plsql/pkg_ucla.getlocationtypes"
-    xml=urllib.request.urlopen(url).read()
+    xml = urllib2.urlopen(url).read()
     soup=BeautifulSoup(xml, "lxml")
     return soup.categories.contents 
 
@@ -15,12 +15,12 @@ def get_each_category():
     data=get_categories()
     categories=[]
     for item in data:
-        obj=Category()
-        obj.name=item["description"]
-        obj.id=item["cat_id"]
-        obj.sort_order=item["sortorder"]
-        categories.append(obj)
-    return categories    	
+        print(item)
+        categories.append(Category(name=item["description"],
+                                   id=int(item["cat_id"]),
+                                   category_id=int(item["cat_id"]) + 1000,
+                                   sort_order=item["sortorder"]))
+    return categories
 
 #tag=soup.title
 #print(tag.name)
@@ -28,14 +28,9 @@ def get_each_category():
 
 def main():
     Category.objects.all().delete()
-    data=get_each_category()
-    for item in data:
+    categories = get_each_category()
+    for category in categories:
         try:
-            category = Category.objects.create(id=item.id, name=item.name, sort_order=item.sort_order)
-            #category.save()
-            print(category)
+            category.save()
         except TypeError:
             pass
-
-main()
-
