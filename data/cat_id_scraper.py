@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from urllib.request import urlopen
+from urllib2 import urlopen
 import sys
 
 

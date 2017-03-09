@@ -1,7 +1,7 @@
 import urllib2
 import sys
 from bs4 import BeautifulSoup
-from api.models import Landmark
+from api.models import Landmark, Category
 
 def get_page(location_id):
     # returns xml data from the endpoint for a location id
@@ -31,20 +31,32 @@ def get_landmark_data(location_id):
     cat_id = None
     if category_data is not None:
         cat_id = int(category_data["cat_id"])
-    print cat_id
+    #print cat_id
     #print "name is", landmark_name
     #print "lat =", coordinates['y'], "long =", coordinates['x']
     #print "Note is: ", note 
-    ret_obj = {
-            "id": location_id,
-            "name": landmark_name,
-            "lat": coordinates['y'],
-            "long": coordinates['x'],
-            "note": note,
-            "cat_id": cat_id
-    }
-    print ret_obj
-    return ret_obj
+#    ret_obj = {
+#            "id": location_id,
+#            "name": landmark_name,
+#            "lat": coordinates['y'],
+#            "long": coordinates['x'],
+#            "note": note,
+#            "cat_id": cat_id
+#    }
+    #print ret_obj
+    #return ret_obj
+
+    if cat_id:
+        category=Category.objects.get(id=cat_id)
+    else:
+        category=None
+
+    return Landmark(id=location_id,
+                    name=landmark_name,
+                    lat=coordinates['y'],
+                    long=coordinates['x'],
+                    text_description=note,
+                    category=category)
 
 def main():
     Landmark.objects.all().delete()

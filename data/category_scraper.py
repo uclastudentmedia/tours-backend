@@ -15,7 +15,7 @@ def get_each_category():
     data=get_categories()
     categories=[]
     for item in data:
-        print(item)
+        #print(item)
         categories.append(Category(name=item["description"],
                                    id=int(item["cat_id"]),
                                    category_id=int(item["cat_id"]) + 1000,
