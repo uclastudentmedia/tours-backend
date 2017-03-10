@@ -24,7 +24,7 @@ def get_landmark(location_id):
         print "No coordinate data for ", location_id
         return None
     coordinates = coordinates[1]
-    note = xml_data.note.string
+    note = xml_data.note.string.encode('utf-8')
     if note is None:
         note = "No description right now for this location."
     category_data = xml_data.categories.category
