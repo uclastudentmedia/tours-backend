@@ -3,7 +3,7 @@ import csv
 from api.models import Landmark, Category
 
 def import_landmarks(csv_filepath):
-    with open(csv_filepath, 'r', encoding='utf-8') as fd:
+    with open(csv_filepath, 'r') as fd:
         #id,name,lat,long,text_description,category_id,category,norm_id
         dr = csv.DictReader(fd)
 
