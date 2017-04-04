@@ -1,6 +1,8 @@
 db.sqlite3
 static/
 *.swp
+*.csv
+photologue/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
