@@ -5,8 +5,9 @@
         <title>{% block title %}{% endblock %}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<!-- Bootstrap -->
-		<link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet" media="screen">
-		<link href="{{ STATIC_URL }}css/screen.css" rel="stylesheet" media="screen">
+		{% load static %}
+		<link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet" media="screen">
+		<link href="{% static "css/screen.css" %}" rel="stylesheet" media="screen">
 	    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	    <!--[if lt IE 9]>
 	      <script src="{{ STATIC_URL }}js/html5shiv.min.js"></script>
@@ -55,8 +56,8 @@
     	<div class="container">
         	{% block content %}{% endblock %}
         </div>
-        <script src="{{ STATIC_URL }}js/jquery.js"></script>
-        <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
-		<script src="{{ STATIC_URL }}js/project.js"></script>
+        <script src="{% static "js/jquery.js" %}"></script>
+        <script src="{% static "js/bootstrap.min.js" %}"></script>
+		<script src="{% static "js/project.js" %}"></script>
     </body>
 </html>
