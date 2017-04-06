@@ -1,2 +1,4 @@
 beautifulsoup4
 lxml # XML parser
+django-photologue
+django-sortedm2m
