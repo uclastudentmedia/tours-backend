@@ -16,20 +16,14 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = 'categories'
 
+
 class Landmark(models.Model):
     name = models.CharField(max_length=200)
     lat=models.FloatField()
     long=models.FloatField()
     text_description = models.TextField()
     category = models.ForeignKey(Category, null=True, blank=True, default=None)
+    priority = models.IntegerField(default=1)
 
     def __str__(self):
         return self.name
-
-class Picture(models.Model):
-    landmark = models.ForeignKey(Landmark, on_delete=models.CASCADE)
-    url = models.CharField(max_length=200)
-
-class Audio(models.Model):
-    landmark = models.ForeignKey(Landmark, on_delete=models.CASCADE)
-    url = models.CharField(max_length=200)
