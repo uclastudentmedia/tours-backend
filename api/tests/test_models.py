@@ -21,8 +21,8 @@ class CategoryTest(TestCase):
     def test_primary_key(self):
         # Categories should have unique id's
         with self.assertRaises(IntegrityError):
-            Category.objects.create(id=0, name='', sort_order=0)
-            Category.objects.create(id=0, name='', sort_order=0)
+            Category.objects.create(id=1, name='', sort_order=0)
+            Category.objects.create(id=1, name='', sort_order=0)
 
     def test_landmark_creation(self):
         # Landmark objects can be created with a Category
