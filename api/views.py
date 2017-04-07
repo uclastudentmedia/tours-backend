@@ -17,7 +17,9 @@ def landmark_list(request):
                                 'name',
                                 'lat',
                                 'long',
-                                'category_id')
+                                'category_id',
+                                'priority',
+                                )
     return JsonResponse({
         "results": list(landmarks)
     })
