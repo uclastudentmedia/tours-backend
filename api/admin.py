@@ -15,5 +15,5 @@ admin.site.register(Category)
 
 # Photologue
 
-admin.site.unregister(Gallery)
-admin.site.unregister(Site)
+#admin.site.unregister(Gallery)
+#admin.site.unregister(Site)
