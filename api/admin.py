@@ -12,8 +12,7 @@ from .models import Category, Landmark
 class LandmarkAdminForm(forms.ModelForm):
     class Meta:
         model = Landmark
-        # The gallery is created automatically
-        exclude = ['gallery']
+        exclude = ['gallery'] # the gallery is created automatically
 
 
 @admin.register(Landmark)
@@ -29,5 +28,4 @@ class CategoryAdmin(admin.ModelAdmin):
 
 # Photologue
 
-#admin.site.unregister(Gallery)
-#admin.site.unregister(Site)
+admin.site.unregister(Site)

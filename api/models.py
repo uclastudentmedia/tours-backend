@@ -25,13 +25,19 @@ class Landmark(models.Model):
     text_description = models.TextField()
     category = models.ForeignKey(Category, null=True, blank=True, default=None)
     priority = models.IntegerField(default=1)
-    gallery=models.OneToOneField(Gallery, blank=True, null=True, default=None, on_delete=models.CASCADE)
+    gallery=models.OneToOneField(Gallery, blank=True, null=True, default=None)
 	
     def __str__(self):
         return self.name
 
 @receiver(models.signals.post_save, sender=Landmark)
 def create_gallery(sender, instance, created, **kwargs):
-	if(created):
-		instance.gallery=Gallery.objects.create(title=instance.name, slug=str(instance.id))
-		instance.save()
+    if created:
+        instance.gallery = Gallery.objects.create(title=instance.name,
+                                                  slug=str(instance.id))
+        instance.save()
+
+@receiver(models.signals.post_delete, sender=Landmark)
+def delete_gallery(sender, instance, **kwargs):
+    if instance.gallery:
+        instance.gallery.delete()
