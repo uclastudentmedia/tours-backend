@@ -19,7 +19,7 @@ class Category(models.Model):
 
 
 class Landmark(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, unique=True)
     lat=models.FloatField()
     long=models.FloatField()
     text_description = models.TextField()
