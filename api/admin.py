@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.contrib.sites.models import Site
 
-from photologue.admin import GalleryAdmin
+from photologue.admin import GalleryAdmin as GalleryAdminDefault
 from photologue.models import Gallery
 
 from .models import Category, Landmark
@@ -28,4 +28,9 @@ class CategoryAdmin(admin.ModelAdmin):
 
 # Photologue
 
+admin.site.unregister(Gallery)
 admin.site.unregister(Site)
+
+@admin.register(Gallery)
+class GalleryAdmin(GalleryAdminDefault):
+    ordering = ('title',)
