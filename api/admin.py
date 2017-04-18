@@ -9,7 +9,18 @@ from .models import Category, Landmark
 
 # Register your models here.
 
-admin.site.register(Landmark)
+class LandmarkAdminForm(forms.ModelForm):
+    class Meta:
+        model = Landmark
+        # The gallery is created automatically
+        exclude = ['gallery']
+
+
+@admin.register(Landmark)
+class LandmarkAdmin(admin.ModelAdmin):
+    form = LandmarkAdminForm
+
+
 admin.site.register(Category)
 
 
