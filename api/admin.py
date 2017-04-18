@@ -19,9 +19,12 @@ class LandmarkAdminForm(forms.ModelForm):
 @admin.register(Landmark)
 class LandmarkAdmin(admin.ModelAdmin):
     form = LandmarkAdminForm
+    ordering = ('name',)
 
 
-admin.site.register(Category)
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    ordering = ('name',)
 
 
 # Photologue
