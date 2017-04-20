@@ -6,7 +6,6 @@ from django.http import Http404
 from django.db.models import F
 
 from .models import Landmark, Category
-
 def index(request):
     context = {}
     return render(request, 'api/index.html', context)

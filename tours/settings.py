@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'photologue',
     'sortedm2m',
+    'images.apps.ImagesConfig',
 ]
 
 SITE_ID = 1
