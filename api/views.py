@@ -29,7 +29,12 @@ def landmark_detail(request, id):
         landmark= Landmark.objects.get(id=int(id))
     except Landmark.DoesNotExist:
         raise Http404("Landmark does not exist")
-    return JsonResponse({ "results": model_to_dict(landmark) })
+
+    landmark_json = model_to_dict(landmark)
+    landmark_json['image_count'] = landmark.gallery.photos.count()
+    del landmark_json['gallery']
+
+    return JsonResponse({ "results": landmark_json })
 
 def category_list(request):
     categories = Category.objects.values('id',
