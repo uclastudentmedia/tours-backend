@@ -91,4 +91,9 @@ class ApiLandmarkDetailTest(TestCase):
         for landmark in self.landmarks:
             response = self.client.get('/api/landmark/' + str(landmark.id) + '/')
             results = response.json()['results']
-            self.assertDictContainsSubset(results, model_to_dict(landmark))
+            landmark_dict = {
+                "id": landmark.id,
+                "name": landmark.name,
+                "text_description": landmark.text_description,
+            }
+            self.assertDictContainsSubset(landmark_dict, results)
