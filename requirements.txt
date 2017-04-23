@@ -3,3 +3,4 @@ lxml # XML parser
 Django==1.10.6
 django-photologue==3.6
 django-sortedm2m==1.3.3
+python-magic==0.4.13
