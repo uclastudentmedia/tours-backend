@@ -22,7 +22,7 @@ def import_images(base_dir):
 
             # create a Photo
             photo = Photo(title=title, slug=title)
-            photo.image.save(title, File(open(image_path, 'r')))
+            photo.image.save(title + '.jpg', File(open(image_path, 'r')))
             photo.save()
 
             # add the photo to the gallery
