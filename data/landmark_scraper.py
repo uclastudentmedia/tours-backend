@@ -39,7 +39,7 @@ def get_landmark(location_id):
     else:
         category=None
 
-    return Landmark(id=location_id,
+    return Landmark(#id=location_id,
                     name=landmark_name,
                     lat=coordinates['y'],
                     long=coordinates['x'],
