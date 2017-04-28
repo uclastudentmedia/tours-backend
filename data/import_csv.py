@@ -21,3 +21,11 @@ def import_landmarks(csv_filepath):
                                 category=category)
             landmarks.append(landmark)
         Landmark.objects.bulk_create(landmarks)
+
+
+def import_priorities(csv_filepath):
+    with open(csv_filepath, 'r') as fd:
+        #priority,searchterm,id
+        dr = csv.DictReader(fd)
+        for r in dr:
+            Landmark.objects.filter(id=r['id']).update(priority = r['priority'])
