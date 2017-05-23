@@ -52,7 +52,8 @@ def tour_list(request):
     for tour in tours:
         tour= model_to_dict(tour)
         tour['landmark_ids'] = list(tour['landmarks'].values('id'))
-	del tour['landmarks']
+	tour['landmark_ids'] = [l["id"] for l in tour['landmark_ids']] 
+        del tour['landmarks']
         tours_list.append(tour)
     return JsonResponse({
 	"results": tours_list
@@ -65,5 +66,6 @@ def tour_detail(request, id):
         raise Http404("Tour does not exist")
     tour_json = model_to_dict(tour)
     tour_json['landmark_ids'] = list(tour_json['landmarks'].values('id')) 
+    tour_json['landmark_ids']=[l["id"] for l in tour_json["landmark_ids"]]
     del tour_json['landmarks']
     return JsonResponse({"results": tour_json}) 
