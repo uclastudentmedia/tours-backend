@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 from django.dispatch import receiver
 from photologue.models import Gallery
 from django.db import models
+from sortedm2m.fields import SortedManyToManyField
 
 # Create your models here.
 
@@ -32,7 +33,7 @@ class Landmark(models.Model):
 
 class Tour(models.Model):
     name=models.CharField(max_length=200, unique=True)
-    landmarks=models.ManyToManyField(Landmark, verbose_name="list of landmarks")
+    landmarks=SortedManyToManyField(Landmark, verbose_name="list of landmarks")
     distance=models.FloatField()
     duration=models.IntegerField()
 
