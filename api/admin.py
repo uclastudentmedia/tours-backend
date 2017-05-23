@@ -5,7 +5,7 @@ from django.contrib.sites.models import Site
 from photologue.admin import GalleryAdmin as GalleryAdminDefault
 from photologue.models import Gallery
 
-from .models import Category, Landmark
+from .models import Category, Landmark, Tour
 
 # Register your models here.
 
@@ -34,3 +34,9 @@ admin.site.unregister(Site)
 @admin.register(Gallery)
 class GalleryAdmin(GalleryAdminDefault):
     ordering = ('title',)
+
+# Tour
+
+@admin.register(Tour)
+class TourAdmin(admin.ModelAdmin):
+    ordering = ('name',)

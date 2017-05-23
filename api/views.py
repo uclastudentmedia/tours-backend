@@ -5,7 +5,8 @@ from django.forms.models import model_to_dict
 from django.http import Http404
 from django.db.models import F
 
-from .models import Landmark, Category
+from .models import Landmark, Category, Tour
+
 def index(request):
     context = {}
     return render(request, 'api/index.html', context)
@@ -44,3 +45,25 @@ def category_list(request):
     return JsonResponse({
         "results": list(categories)
     })
+
+def tour_list(request):
+    tours=list(Tour.objects.all())
+    tours_list=[]
+    for tour in tours:
+        tour= model_to_dict(tour)
+        tour['landmark_ids'] = list(tour['landmarks'].values('id'))
+	del tour['landmarks']
+        tours_list.append(tour)
+    return JsonResponse({
+	"results": tours_list
+    })
+
+def tour_detail(request, id):
+    try:
+        tour= Tour.objects.get(id=int(id))
+    except Landmark.DoesNotExist:
+        raise Http404("Tour does not exist")
+    tour_json = model_to_dict(tour)
+    tour_json['landmark_ids'] = list(tour_json['landmarks'].values('id')) 
+    del tour_json['landmarks']
+    return JsonResponse({"results": tour_json}) 

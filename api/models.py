@@ -30,6 +30,16 @@ class Landmark(models.Model):
     def __str__(self):
         return self.name
 
+class Tour(models.Model):
+    name=models.CharField(max_length=200, unique=True)
+    landmarks=models.ManyToManyField(Landmark, verbose_name="list of landmarks")
+    distance=models.FloatField()
+    duration=models.IntegerField()
+
+    def __str__(self):
+        return self.name
+
+
 @receiver(models.signals.post_save, sender=Landmark)
 def create_gallery(sender, instance, created, **kwargs):
     if created:
