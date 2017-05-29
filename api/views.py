@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.forms.models import model_to_dict
 from django.http import Http404
 from django.db.models import F
+import json
 
 from .models import Landmark, Category, Tour
 
@@ -33,6 +34,10 @@ def landmark_detail(request, id):
 
     landmark_json = model_to_dict(landmark)
     landmark_json['image_count'] = landmark.gallery.photos.count()
+
+    # remove extra spacing
+    attributes_json = json.loads(landmark_json['attributes'])
+    landmark_json['attributes'] = json.dumps(attributes_json)
     del landmark_json['gallery']
 
     return JsonResponse({ "results": landmark_json })
