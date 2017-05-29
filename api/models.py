@@ -3,6 +3,8 @@ from django.dispatch import receiver
 from photologue.models import Gallery
 from django.db import models
 from sortedm2m.fields import SortedManyToManyField
+from jsonfield import JSONField
+import collections
 
 # Create your models here.
 
@@ -26,10 +28,13 @@ class Landmark(models.Model):
     text_description = models.TextField()
     category = models.ForeignKey(Category, null=True, blank=True, default=None)
     priority = models.IntegerField(default=1)
-    gallery=models.OneToOneField(Gallery, blank=True, null=True, default=None)
-	
+    gallery = models.OneToOneField(Gallery, blank=True, null=True, default=None)
+    attributes = JSONField(default='{\n    "key": "value"\n}',
+            load_kwargs={'object_pairs_hook': collections.OrderedDict})
+
     def __str__(self):
         return self.name
+
 
 class Tour(models.Model):
     name=models.CharField(max_length=200, unique=True)
