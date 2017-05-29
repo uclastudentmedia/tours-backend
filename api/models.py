@@ -4,7 +4,7 @@ from photologue.models import Gallery
 from django.db import models
 from sortedm2m.fields import SortedManyToManyField
 from jsonfield import JSONField
-import collections
+from collections import OrderedDict
 
 # Create your models here.
 
@@ -29,8 +29,8 @@ class Landmark(models.Model):
     category = models.ForeignKey(Category, null=True, blank=True, default=None)
     priority = models.IntegerField(default=1)
     gallery = models.OneToOneField(Gallery, blank=True, null=True, default=None)
-    attributes = JSONField(default='{\n    "key": "value"\n}',
-            load_kwargs={'object_pairs_hook': collections.OrderedDict})
+    attributes = JSONField(null=True, blank=True, default=None,
+            load_kwargs={'object_pairs_hook': OrderedDict})
 
     def __str__(self):
         return self.name
