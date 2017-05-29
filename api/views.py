@@ -34,13 +34,7 @@ def landmark_detail(request, id):
 
     landmark_json = model_to_dict(landmark)
     landmark_json['image_count'] = landmark.gallery.photos.count()
-
-    # remove extra spacing
-    if landmark_json['attributes'] is None:
-        landmark_json['attributes'] = '{}'
-    else:
-        attributes_json = json.loads(landmark_json['attributes'])
-        landmark_json['attributes'] = json.dumps(attributes_json)
+    landmark_json['attributes'] = landmark.attributes
 
     del landmark_json['gallery']
 
