@@ -26,7 +26,7 @@ urlpatterns = [
     url(r'^api/', include('api.urls')),
     url(r'^photologue/', include('photologue.urls', namespace='photologue')),
     url(r'^images/', include('images.urls')), 
-    url(r'^indoors/' include('indoors.urls')),
+    url(r'^indoor/', include('indoor.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

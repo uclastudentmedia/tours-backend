@@ -18,4 +18,3 @@ def landmark_image(request, id, number):
     image=open(path, "rb").read()
     image_type=magic.from_file(path, mime=True)
     return HttpResponse(image, content_type=image_type)
-    #return HttpResponse(image, content_type="image/png")
