@@ -11,7 +11,11 @@ def import_images(base_dir):
     """
 
     for landmark_id in os.listdir(base_dir):
-        landmark = Landmark.objects.get(id=int(landmark_id))
+        try:
+            landmark = Landmark.objects.get(id=int(landmark_id))
+        except:
+            continue
+
         photos_dir = os.path.join(base_dir, landmark_id, 'images')
 
         # add photos in numerical order

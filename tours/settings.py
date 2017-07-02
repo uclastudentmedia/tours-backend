@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.gis',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
     'photologue',
     'sortedm2m',
     'images.apps.ImagesConfig',
+    'indoor.apps.IndoorConfig',
 ]
 
 SITE_ID = 1
@@ -87,19 +89,31 @@ WSGI_APPLICATION = 'tours.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
+"""
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#        'ENGINE': 'django.db.backends.mysql',
-#        'NAME': 'tours',
-#        'USER': 'toursuser',
-#        'PASSWORD': 'bruin111',
-#        'HOST': 'localhost',
-#        'PORT': '',
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+	'ENGINE': 'django.db.backends.mysql',
+	'NAME': 'tours',
+	'USER': 'toursuser',
+	'PASSWORD': 'bruin111',
+	'HOST': 'localhost',
+	'PORT': '',
     }
 }
+"""
 
+DATABASES = {
+    'default': {
+	'ENGINE': 'django.contrib.gis.db.backends.postgis',
+	'NAME': 'tours',
+	'USER': 'tours_admin',
+	'PASSWORD': 'bruin111',
+	'HOST': 'localhost',
+	'PORT': '',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
