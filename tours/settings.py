@@ -89,31 +89,40 @@ WSGI_APPLICATION = 'tours.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
-"""
-DATABASES = {
-    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-	'ENGINE': 'django.db.backends.mysql',
-	'NAME': 'tours',
-	'USER': 'toursuser',
-	'PASSWORD': 'bruin111',
-	'HOST': 'localhost',
-	'PORT': '',
-    }
-}
-"""
+# 'sqlite3', 'mysql', or 'psql'
+DATABASE_IN_USE = 'sqlite3'
 
-DATABASES = {
-    'default': {
-	'ENGINE': 'django.contrib.gis.db.backends.postgis',
-	'NAME': 'tours',
-	'USER': 'tours_admin',
-	'PASSWORD': 'bruin111',
-	'HOST': 'localhost',
-	'PORT': '',
+if DATABASE_IN_USE == 'sqlite3':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
+elif DATABASE_IN_USE == 'mysql':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'tours',
+            'USER': 'toursuser',
+            'PASSWORD': 'bruin111',
+            'HOST': 'localhost',
+            'PORT': '',
+        }
+    }
+elif DATABASE_IN_USE == 'psql':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'NAME': 'tours',
+            'USER': 'tours_admin',
+            'PASSWORD': 'bruin111',
+            'HOST': 'localhost',
+            'PORT': '',
+        }
+    }
+else:
+    raise Exception('Unsupported database: ' + DATABASE_IN_USE)
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
