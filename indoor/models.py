@@ -11,14 +11,14 @@ roompolygon_mapping = {
     'geom' : 'POLYGON',
 }
 
-class Point(models.Model):
-    point_id = models.IntegerField()
+class POI(models.Model):
+    name = models.CharField(max_length=80)
     type = models.CharField(max_length=80)
     geom = models.PointField(srid=4326)
 
 # Auto-generated `LayerMapping` dictionary for RoomPolygon model
-point_mapping = {
-    'point_id' : 'id',
+poi_mapping = {
+    'name' : 'name',
     'type' : 'type',
     'geom' : 'POINT',
 }
