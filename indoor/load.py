@@ -1,5 +1,5 @@
 from django.contrib.gis.utils import LayerMapping
-from .models import RoomPolygon, POI, Path
+from .models import Building, Floor, RoomPolygon, POI, Path
 from .models import roompolygon_mapping, poi_mapping, path_mapping
 import os
 
@@ -33,7 +33,7 @@ def load_paths(building, floor, verbose=True):
     paths_lm.save(strict=True, verbose=verbose)
 
 
-def load_floors(delete=False):
+def load_floors(delete=True):
     buildings = {
         'ackerman': ['2'],
         #'boelter': ['4', '6'],
@@ -42,14 +42,22 @@ def load_floors(delete=False):
     if delete:
         delete_gis_data()
 
-    for building in buildings:
-        for floor in buildings[building]:
+    for building_name in buildings:
+        building = Building.objects.create(name=building_name)
+        for floor_name in buildings[building_name]:
+            floor = Floor.objects.create(name=floor_name,building=building)
+
             print('Loading {b} {f}'.format(b=building, f=floor))
-            load_rooms(building, floor)
-            load_points(building, floor)
-            load_paths(building, floor)
+            load_rooms(building_name, floor_name)
+            load_points(building_name, floor_name)
+            load_paths(building_name, floor_name)
+
+            # Hacky way to set the floor foreign key:
+            # Assume a feature belongs to the current floor if floor=None
+            RoomPolygon.objects.filter(floor=None).update(floor=floor)
+            POI.objects.filter(floor=None).update(floor=floor)
+            Path.objects.filter(floor=None).update(floor=floor)
+
 
 def delete_gis_data():
-    RoomPolygon.objects.all().delete()
-    POI.objects.all().delete()
-    Path.objects.all().delete()
+    Building.objects.all().delete() # cascading delete
