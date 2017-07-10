@@ -13,7 +13,7 @@ class Floor(models.Model):
     building = models.ForeignKey(Building, null=False, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return self.building.__str__() + ' ' + self.name
 
 
 class RoomPolygon(models.Model):
@@ -22,7 +22,7 @@ class RoomPolygon(models.Model):
     floor = models.ForeignKey(Floor, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return self.floor.__str__() + ' ' + self.name
 
 # Auto-generated `LayerMapping` dictionary for RoomPolygon model
 roompolygon_mapping = {
@@ -38,7 +38,7 @@ class POI(models.Model):
     floor = models.ForeignKey(Floor, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return self.floor.__str__() + ' ' + self.name
 
 # Auto-generated `LayerMapping` dictionary for POI model
 poi_mapping = {
@@ -54,7 +54,7 @@ class Path(models.Model):
     floor = models.ForeignKey(Floor, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return str(self.id)
+        return self.floor.__str__() + ' ' + str(self.id)
 
 # Auto-generated `LayerMapping` dictionary for Path model
 path_mapping = {
