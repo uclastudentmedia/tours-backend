@@ -20,11 +20,11 @@ def get_floor(G):
     return G.floor
 
 
-def _set_floor(G, name):
+def set_floor(G, name):
     G.floor = name
 
 
-def _generate_graph(floor):
+def generate_graph(floor):
     """
     @type floor: Floor
     @rtype: networkx.Graph
@@ -56,7 +56,7 @@ def _generate_graph(floor):
         distance = math.sqrt((pt1[0] - pt2[0])**2 + (pt1[1] - pt2[1])**2)
         G[pt1][pt2]['weight'] = distance
 
-    _set_floor(G, floor.name)
+    set_floor(G, floor.name)
     return G
 
 
@@ -77,16 +77,17 @@ def route(building_name, start_name, end_name):
     start = POI.objects.get(name=start_name, floor__building=building)
     end = POI.objects.get(name=end_name, floor__building=building)
 
-    G = _generate_graph(start.floor)
+    G = generate_graph(start.floor)
 
     try:
-        path = nx.shortest_path(G, start.geom.coords, end.geom.coords)
-    except nx.NetworkXError as e:
+        path = nx.shortest_path(G, start.geom.coords, end.geom.coords, 'weight')
+    except nx.NetworkXNoPath as e:
         print('no path found: ' + e.message)
         return [nx.null_graph()]
 
+    # TODO: support multiple floors
     out = nx.Graph()
     out.add_path(path)
-    _set_floor(out, start.floor.name)
+    set_floor(out, start.floor.name)
 
     return [out]
