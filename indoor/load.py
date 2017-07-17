@@ -35,7 +35,7 @@ def load_paths(building, floor, verbose=True):
 
 def load_floors(delete=True):
     buildings = {
-        'ackerman': ['2'],
+        'ackerman': ['b', '2'],
         #'boelter': ['4', '6'],
     }
 

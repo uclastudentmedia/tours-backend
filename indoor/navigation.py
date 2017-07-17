@@ -10,10 +10,19 @@ get_floor
 route
 """
 
+# cost to use stairs
+STAIR_COST = 10000
+
+# floor difference to prefer elevator over stairs
+ELEVATOR_THRESHOLD = 5
+
+# cost to use elevators
+ELEVATOR_COST = STAIR_COST * ELEVATOR_THRESHOLD
+
 
 def get_floor(G):
     """
-    @type G: networkx.Graph
+    @type G: nx.Graph
     @return: the floor that this graph is on
     @rtype: str
     """
@@ -24,50 +33,116 @@ def set_floor(G, name):
     G.floor = name
 
 
-def generate_graph(floor):
+def to_3d_coords(xy, floor_name):
+    """
+    create 3d coord tuples: (x, y, floor)
+    """
+    return (int(xy[0]), int(xy[1]), floor_name)
+
+
+def generate_floor_graph(floor):
     """
     @type floor: Floor
-    @rtype: networkx.Graph
+    @rtype: nx.Graph
+
+    The graph's nodes are represented as (x, y, floor)
     """
 
     G = nx.Graph()
     paths = Path.objects.filter(floor=floor)
     for path in paths:
-        coords = path.geom.coord_seq
+        coords_seq = [to_3d_coords(xy, floor.name) for xy in path.geom.coords]
 
         # add nodes
-        for coord in coords:
-            name = 'Node at ({x}, {y})'.format(x=int(coord[0]), y=int(coord[1]))
-            G.add_node(coord, name=name)
+        for coords in coords_seq:
+            G.add_node(coords, name=str(coords))
 
         # add edges
-        G.add_path(coords)
+        G.add_path(coords_seq)
 
     # rename nodes that are POIs
     pois = POI.objects.filter(floor=floor)
     for p in pois:
+        coords_3d = to_3d_coords(p.geom.coords, floor.name)
         try:
-            nx.set_node_attributes(G, 'name', {p.geom.coords: p.name})
+            nx.set_node_attributes(G, 'name', {coords_3d: p.name})
         except KeyError: # this POI is not in the network, skip it
+            # TODO: remove this exception, debugging only
+            raise Exception("POI not connected to network: " + p.name)
             pass
 
     # set edge weights as distance
     for pt1, pt2 in G.edges_iter():
         distance = math.sqrt((pt1[0] - pt2[0])**2 + (pt1[1] - pt2[1])**2)
         G[pt1][pt2]['weight'] = distance
+        G[pt1][pt2]['type'] = 'path'
 
     set_floor(G, floor.name)
     return G
 
 
-def route(building_name, start_name, end_name):
+def generate_building_graph(building):
+    """
+    @type building: Building
+    @rtype: nx.Graph
+
+    Combines the graphs of each floor with stairs/elevators
+    """
+    floors = Floor.objects.filter(building=building)
+
+    floor_graphs = [generate_floor_graph(floor) for floor in floors]
+    building_graph = nx.compose_all(floor_graphs)
+
+    # add elevators to connect floors
+    elevators = POI.objects.filter(type='elevator', floor__building=building)
+    elevator_names = [p.name for p in elevators.distinct('name')]
+    for elevator_name in elevator_names:
+        # connect all elevator entrances to a dummy node
+        dummy_node = 'dummy ' + elevator_name
+        building_graph.add_node(dummy_node, name=dummy_node)
+
+        points = elevators.filter(name=elevator_name)
+        nodes = [to_3d_coords(p.geom.coords, p.floor.name) for p in points]
+        edges = [(node, dummy_node) for node in nodes]
+
+        # total cost of using elevators is weight * 2
+        weight = ELEVATOR_COST / 2
+        building_graph.add_edges_from(edges, weight=weight, type='elevator')
+
+    # add stairs to connect floors
+    stairs = POI.objects.filter(type='stair', floor__building=building)
+    stair_names = [p.name for p in stairs.distinct('name')]
+    for stair_name in stair_names:
+        # TODO: make cost per floor, so more floors -> elevator preferred
+        dummy_node = 'dummy ' + stair_name
+        building_graph.add_node(dummy_node, name=dummy_node)
+
+        points = stairs.filter(name=stair_name)
+        nodes = [to_3d_coords(p.geom.coords, p.floor.name) for p in points]
+        edges = [(node, dummy_node) for node in nodes]
+
+        weight = STAIR_COST / 2
+        building_graph.add_edges_from(edges, weight=weight, type='stair')
+
+    return building_graph
+
+
+def route(building_name, start_name, end_name, use_stairs=True, use_elevators=False):
     """
     @type building_name: str
     @type start_name: str
     @type end_name: str
+    @type use_stairs: bool
+    @type use_elevators: bool
     @return: The best path from `start` to `end`. Each element is the part of
              the path on one floor.
-    @rtype: list of networkx.Graph
+    @rtype: list of list of (x,y) tuples
+
+    @throws: `model`.DoesNotExist, if building/start/end is not found
+
+
+    // @throws: nx.NetworkXNoPath, if no path is found
+    // @throws: nx.NetworkXError, if POI is not in graph
 
     eg: indoor.navigation.route('ackerman', '2400G', '2410')
     """
@@ -76,18 +151,40 @@ def route(building_name, start_name, end_name):
     building = Building.objects.get(name=building_name)
     start = POI.objects.get(name=start_name, floor__building=building)
     end = POI.objects.get(name=end_name, floor__building=building)
+    s_coords = to_3d_coords(start.geom.coords, start.floor.name)
+    e_coords = to_3d_coords(end.geom.coords, end.floor.name)
 
-    G = generate_graph(start.floor)
+    # get the routing network
+    building_graph = generate_building_graph(building)
 
+    # do routing
     try:
-        path = nx.shortest_path(G, start.geom.coords, end.geom.coords, 'weight')
+        path = nx.shortest_path(building_graph, s_coords, e_coords, 'weight')
+    except nx.NetworkXError as e:
+        print(e.message)
+        return []
     except nx.NetworkXNoPath as e:
         print('no path found: ' + e.message)
-        return [nx.null_graph()]
+        return []
 
-    # TODO: support multiple floors
-    out = nx.Graph()
-    out.add_path(path)
-    set_floor(out, start.floor.name)
+    # separate path into floors
+    output = []
+    output.append([])
 
-    return [out]
+    # TODO: change 3d coords back to 2d coords
+
+    for i in range(len(path) - 1):
+        pt1 = path[i]
+        pt2 = path[i+1]
+        if building_graph[pt1][pt2]['type'] is 'path':
+            # this edge is a path, add it to the current floor
+            output[-1].append(path[i])
+        else:
+            # this edge is a stair/elevator, so there is a new floor
+            output.append([])
+
+
+    # filter out empty floors
+    output = list(filter(lambda x: len(x) > 0, output))
+
+    return output
