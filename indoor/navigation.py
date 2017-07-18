@@ -134,9 +134,10 @@ def route(building_name, start_name, end_name, use_stairs=True, use_elevators=Fa
     @type end_name: str
     @type use_stairs: bool
     @type use_elevators: bool
-    @return: The best path from `start` to `end`. Each element is the part of
-             the path on one floor.
-    @rtype: list of list of (x,y) tuples
+    @return: A tuple, (paths, floors). The best path from `start` to `end`.
+             Each element is the part of the path on one floor. `floors`
+             indicates which floor a particular `path` belongs to.
+    @rtype: (list of list of (x,y) tuples, list of string)
 
     @throws: `model`.DoesNotExist, if building/start/end is not found
 
@@ -145,6 +146,27 @@ def route(building_name, start_name, end_name, use_stairs=True, use_elevators=Fa
     // @throws: nx.NetworkXError, if POI is not in graph
 
     eg: indoor.navigation.route('ackerman', '2400G', '2410')
+    returns:
+        (
+          # paths
+          [
+            [
+              (256, -601),
+              (1042, -839),
+            ],
+            [
+              (1214, -1262),
+              (1267, -1113),
+            ]
+          ],
+
+          # floors
+          [
+            u'2',
+            u'b'
+          ]
+        )
+
     """
 
     # these must exist and be unique
@@ -168,25 +190,29 @@ def route(building_name, start_name, end_name, use_stairs=True, use_elevators=Fa
         return []
 
     # separate path into floors
-    output = []
-    output.append([])
-
-    # TODO: change 3d coords back to 2d coords
+    separated_paths = []
+    separated_paths.append([])
 
     for i in range(len(path) - 1):
         pt1 = path[i]
         pt2 = path[i+1]
         if building_graph[pt1][pt2]['type'] is 'path':
             # this edge is a path, add it to the current floor
-            output[-1].append(path[i])
+            separated_paths[-1].append(path[i])
         else:
             # this edge is a stair/elevator, so there is a new floor
-            output.append([])
+            separated_paths.append([])
 
     # add the last node to the last floor
-    output[-1].append(path[-1])
+    separated_paths[-1].append(path[-1])
 
     # filter out empty floors
-    output = list(filter(lambda x: len(x) > 0, output))
+    separated_paths = filter(lambda x: len(x) > 0, separated_paths)
 
-    return output
+    # get a list of the floor names
+    floors = [floor[0][2] for floor in separated_paths]
+
+    # change 3d coords back to 2d coords
+    paths_2d = [[(x,y) for (x,y,z) in floor] for floor in separated_paths]
+
+    return (paths_2d, floors)
