@@ -11,6 +11,7 @@ class Building(models.Model):
 class Floor(models.Model):
     name = models.CharField(max_length=80)
     building = models.ForeignKey(Building, null=False, on_delete=models.CASCADE)
+    level = models.IntegerField()
 
     def __str__(self):
         return self.building.__str__() + ' ' + self.name

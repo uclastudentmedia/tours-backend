@@ -33,7 +33,9 @@ def load_paths(building, floor, verbose=True):
     paths_lm.save(strict=True, verbose=verbose)
 
 
-def load_floors(delete=True):
+def load(delete=True):
+    # holds all of the buildings and floors to load
+    # make sure the floors are in order!!!
     buildings = {
         'ackerman': ['b', '2'],
         #'boelter': ['4', '6'],
@@ -44,13 +46,21 @@ def load_floors(delete=True):
 
     for building_name in buildings:
         building = Building.objects.create(name=building_name)
-        for floor_name in buildings[building_name]:
-            floor = Floor.objects.create(name=floor_name,building=building)
 
+        for index, floor_name in enumerate(buildings[building_name]):
             print('Loading {b} {f}'.format(b=building, f=floor))
-            load_rooms(building_name, floor_name)
-            load_points(building_name, floor_name)
-            load_paths(building_name, floor_name)
+
+            floor = Floor.objects.create(name=floor_name,
+                                         building=building,
+                                         level=index)
+
+            try:
+                load_rooms(building_name, floor_name)
+                load_points(building_name, floor_name)
+                load_paths(building_name, floor_name)
+            except Exception as e:
+                print('Failed to load {b} {f}'.format(b=building, f=floor))
+                print(e.message)
 
             # Hacky way to set the floor foreign key:
             # Assume a feature belongs to the current floor if floor=None
