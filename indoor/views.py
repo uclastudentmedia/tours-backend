@@ -36,14 +36,14 @@ def navigation_route(request, building_name, floor, start_room, end_room):
     start_border = start_room_data.geom.coords
     # room only has one polygon since we're using PolygonField
     start_border = [(n[0], -n[1]) for n in start_border[0]]
-    draw.polygon(start_border, fill=(255, 0, 0, 255))
+    draw.polygon(start_border, fill=(255, 114, 114, 255))
     end_border = end_room_data.geom.coords
     # room only has one polygon since we're using PolygonField
     end_border = [(n[0], -n[1]) for n in end_border[0]]
-    draw.polygon(end_border, fill=(255, 0, 0, 255))
+    draw.polygon(end_border, fill=(255, 114, 114, 255))
 
     # draw lines
-    line_fill = (52, 152, 219, 255)
+    line_fill = (0, 113, 188, 255)
     nodes, floors = route(building_name, start_room, end_room)
     nodes = nodes[0]
     nodes = [(n[0], -n[1]) for n in nodes]
@@ -56,17 +56,17 @@ def navigation_route(request, building_name, floor, start_room, end_room):
         draw.ellipse([x - rad, y - rad, x + rad, y + rad], fill=line_fill)
 
     # draw text centered in room
-    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 50)
+    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 40)
     start_centroid = start_room_data.geom.centroid
     text_width, text_height = draw.textsize(start_room, font=font)
     start_coords = (start_centroid.x - text_width / 2,
             -start_centroid.y - text_height / 2)
-    draw.text(start_coords, start_room, font=font, fill=(0, 0, 255, 255))
+    draw.text(start_coords, start_room, font=font, fill=(0, 188, 169, 255))
     end_centroid = end_room_data.geom.centroid
     text_width, text_height = draw.textsize(end_room, font=font)
     end_coords = (end_centroid.x - text_width / 2,
             -end_centroid.y - text_height / 2)
-    draw.text(end_coords, end_room, font=font, fill=(0, 0, 255, 255))
+    draw.text(end_coords, end_room, font=font, fill=(0, 188, 169, 255))
 
     # return modified image
     response=HttpResponse(content_type="image/png")
