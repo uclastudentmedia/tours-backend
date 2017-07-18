@@ -1,9 +1,10 @@
 from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponse, Http404
+from .models import RoomPolygon
 from api.models import Landmark
 from .navigation import route
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 import matplotlib.pyplot as plt
 import magic
 import random
@@ -27,19 +28,47 @@ def get_floor_plan_image(building_name, floor_string):
 def navigation_route(request, building_name, floor, start_room, end_room):
     # TODO: probably clean up etc.
     image = get_floor_plan_image(building_name, floor)
-    graph = route(building_name, start_room, end_room)[0]
+    start_room_data = RoomPolygon.objects.get(name=start_room)
+    end_room_data = RoomPolygon.objects.get(name=end_room)
     draw = ImageDraw.Draw(image)
+
+    # fill in rooms
+    start_border = start_room_data.geom.coords
+    # room only has one polygon since we're using PolygonField
+    start_border = [(n[0], -n[1]) for n in start_border[0]]
+    draw.polygon(start_border, fill=(255, 0, 0, 255))
+    end_border = end_room_data.geom.coords
+    # room only has one polygon since we're using PolygonField
+    end_border = [(n[0], -n[1]) for n in end_border[0]]
+    draw.polygon(end_border, fill=(255, 0, 0, 255))
+
+    # draw lines
     line_fill = (52, 152, 219, 255)
-    for e in graph.edges():
-        edgeList = [(e[0][0], -e[0][1]), (e[1][0], -e[1][1])]
-        #print edgeList
-        draw.line(edgeList, fill=line_fill, width=20)
-    for n in graph.nodes():
-        #print n
-        x = n[0]
-        y = -n[1]
-        rad = 15
+    nodes, floors = route(building_name, start_room, end_room)
+    nodes = nodes[0]
+    nodes = [(n[0], -n[1]) for n in nodes]
+    for i in range(0, len(nodes)-1):
+        draw.line((nodes[i], nodes[i+1]), fill=line_fill, width=18)
+
+    # draw nodes
+    rad = 10
+    for (x,y) in nodes:
         draw.ellipse([x - rad, y - rad, x + rad, y + rad], fill=line_fill)
+
+    # draw text centered in room
+    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 50)
+    start_centroid = start_room_data.geom.centroid
+    text_width, text_height = draw.textsize(start_room, font=font)
+    start_coords = (start_centroid.x - text_width / 2,
+            -start_centroid.y - text_height / 2)
+    draw.text(start_coords, start_room, font=font, fill=(0, 0, 255, 255))
+    end_centroid = end_room_data.geom.centroid
+    text_width, text_height = draw.textsize(end_room, font=font)
+    end_coords = (end_centroid.x - text_width / 2,
+            -end_centroid.y - text_height / 2)
+    draw.text(end_coords, end_room, font=font, fill=(0, 0, 255, 255))
+
+    # return modified image
     response=HttpResponse(content_type="image/png")
     image.save(response, "PNG")
     return response
