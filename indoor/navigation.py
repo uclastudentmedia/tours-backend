@@ -183,6 +183,8 @@ def route(building_name, start_name, end_name, use_stairs=True, use_elevators=Fa
             # this edge is a stair/elevator, so there is a new floor
             output.append([])
 
+    # add the last node to the last floor
+    output[-1].append(path[-1])
 
     # filter out empty floors
     output = list(filter(lambda x: len(x) > 0, output))
