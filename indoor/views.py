@@ -56,7 +56,8 @@ def navigation_route(request, building_name, floor, start_room, end_room):
         draw.ellipse([x - rad, y - rad, x + rad, y + rad], fill=line_fill)
 
     # draw text centered in room
-    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 40)
+    font = ImageFont.truetype(os.path.join(settings.MEDIA_ROOT,
+        "fonts/Roboto-Bold.ttf"), 40)
     start_centroid = start_room_data.geom.centroid
     text_width, text_height = draw.textsize(start_room, font=font)
     start_coords = (start_centroid.x - text_width / 2,
