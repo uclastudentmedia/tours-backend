@@ -124,6 +124,9 @@ def generate_building_graph(building):
         weight = STAIR_COST / 2
         building_graph.add_edges_from(edges, weight=weight, type='stair')
 
+    # prevent further changes to the graph
+    nx.freeze(building_graph)
+
     return building_graph
 
 
