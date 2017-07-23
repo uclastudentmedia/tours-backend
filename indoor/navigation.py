@@ -89,7 +89,6 @@ def generate_building_graph(building):
     Combines the graphs of each floor with stairs/elevators
     """
     floors = Floor.objects.filter(building=building)
-
     floor_graphs = [generate_floor_graph(floor) for floor in floors]
     building_graph = nx.compose_all(floor_graphs)
 
@@ -97,32 +96,34 @@ def generate_building_graph(building):
     elevators = POI.objects.filter(type='elevator', floor__building=building)
     elevator_names = [p.name for p in elevators.distinct('name')]
     for elevator_name in elevator_names:
-        # connect all elevator entrances to a dummy node
-        dummy_node = 'dummy ' + elevator_name
-        building_graph.add_node(dummy_node, name=dummy_node)
-
         points = elevators.filter(name=elevator_name)
         nodes = [to_3d_coords(p.geom.coords, p.floor.name) for p in points]
-        edges = [(node, dummy_node) for node in nodes]
+
+        # connect all elevator entrances to a dummy node
+        dummy_node = 'dummy ' + elevator_name
+        nodes = [dummy_node] + nodes
 
         # total cost of using elevators is weight * 2
         weight = ELEVATOR_COST / 2
-        building_graph.add_edges_from(edges, weight=weight, type='elevator')
+        building_graph.add_star(nodes, weight=weight, type='elevator')
 
     # add stairs to connect floors
     stairs = POI.objects.filter(type='stair', floor__building=building)
     stair_names = [p.name for p in stairs.distinct('name')]
     for stair_name in stair_names:
-        # TODO: make cost per floor, so more floors -> elevator preferred
-        dummy_node = 'dummy ' + stair_name
-        building_graph.add_node(dummy_node, name=dummy_node)
-
-        points = stairs.filter(name=stair_name)
+        points = stairs.filter(name=stair_name).order_by('floor__level')
         nodes = [to_3d_coords(p.geom.coords, p.floor.name) for p in points]
-        edges = [(node, dummy_node) for node in nodes]
 
-        weight = STAIR_COST / 2
-        building_graph.add_edges_from(edges, weight=weight, type='stair')
+        for i in range(len(nodes) - 1):
+            # the cost to use stairs depends on the how many stories you go
+            start_level = points[i].floor.level
+            end_level = points[i+1].floor.level
+            level_diff = end_level - start_level
+            weight = STAIR_COST * level_diff
+
+            start = nodes[i]
+            end = nodes[i + 1]
+            building_graph.add_edge(start, end, weight=weight, type='stair')
 
     # prevent further changes to the graph
     nx.freeze(building_graph)
