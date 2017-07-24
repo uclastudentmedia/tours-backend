@@ -1,6 +1,7 @@
 from django.contrib.gis.utils import LayerMapping
 from .models import Building, Floor, RoomPolygon, POI, Path
 from .models import roompolygon_mapping, poi_mapping, path_mapping
+from api.models import Landmark
 import os
 
 INDOORS_GIS_ROOT = '/var/www/html/indoors-gis'
@@ -34,25 +35,40 @@ def load_paths(building, floor, verbose=True):
 
 
 def load(delete=True):
-    # holds all of the buildings and floors to load
-    # make sure the floors are in order!!!
-    buildings = {
-        'ackerman': ['b', '2'],
-        #'boelter': ['4', '6'],
-    }
+
+    # holds all of the buildings to load
+    buildings = [
+        {
+            'name': 'ackerman',
+            'floors': ['b', '2'],
+            'landmark_id': 31,
+        },
+        #{
+        #    'name': 'boelter',
+        #    'floors': ['4', '6'],
+        #    'landmark_id': 67,
+        #},
+    ]
 
     if delete:
         delete_gis_data()
 
-    for building_name in buildings:
+    for building_dict in buildings:
+        building_name = building_dict['name']
+        floors = building_dict['floors']
+        landmark_id = building_dict['landmark_id']
+
         building = Building.objects.create(name=building_name)
+        landmark = Landmark.objects.get(id=landmark_id)
+        landmark.building = building
+        landmark.save()
 
-        for index, floor_name in enumerate(buildings[building_name]):
-            print('Loading {b} {f}'.format(b=building, f=floor))
-
+        for index, floor_name in enumerate(floors):
             floor = Floor.objects.create(name=floor_name,
                                          building=building,
                                          level=index)
+
+            print('Loading {b} {f}'.format(b=building, f=floor))
 
             try:
                 load_rooms(building_name, floor_name)

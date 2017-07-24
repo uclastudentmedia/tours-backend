@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from django.dispatch import receiver
 from photologue.models import Gallery
+from indoor.models import Building
 from django.db import models
 from sortedm2m.fields import SortedManyToManyField
 from jsonfield import JSONField
@@ -31,6 +32,8 @@ class Landmark(models.Model):
     gallery = models.OneToOneField(Gallery, blank=True, null=True, default=None)
     attributes = JSONField(null=True, blank=True, default=None,
             load_kwargs={'object_pairs_hook': OrderedDict})
+    building = models.OneToOneField(Building, blank=True, null=True,
+                                    default=None, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name
