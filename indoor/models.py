@@ -1,8 +1,10 @@
 # This is an auto-generated Django model module created by ogrinspect.
 from django.contrib.gis.db import models
+from picklefield.fields import PickledObjectField
 
 class Building(models.Model):
     name = models.CharField(max_length=80)
+    graph_pickled_data = PickledObjectField(default={})
 
     def __str__(self):
         return self.name

@@ -2,6 +2,7 @@ from django.contrib.gis.utils import LayerMapping
 from .models import Building, Floor, RoomPolygon, POI, Path
 from .models import roompolygon_mapping, poi_mapping, path_mapping
 from api.models import Landmark
+from .navigation import generate_building_graph
 import os
 
 INDOORS_GIS_ROOT = '/var/www/html/indoors-gis'
@@ -83,6 +84,10 @@ def load(delete=True):
             RoomPolygon.objects.filter(floor=None).update(floor=floor)
             POI.objects.filter(floor=None).update(floor=floor)
             Path.objects.filter(floor=None).update(floor=floor)
+
+        building_graph = generate_building_graph(building)
+        building.graph_pickled_data = building_graph
+        building.save()
 
 
 def delete_gis_data():

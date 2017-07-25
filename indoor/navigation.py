@@ -226,7 +226,7 @@ def route(building_name, start_name, end_name, use_stairs=True, use_elevators=Fa
     end_coords = to_3d_coords(end.geom.coords, end.floor.name)
 
     # get the routing network
-    building_graph = generate_building_graph(building)
+    building_graph = building.graph_pickled_data
 
     # remove stairs/elevators from the graph if they are not used
     types = nx.get_edge_attributes(building_graph, 'type')
@@ -249,7 +249,7 @@ def route(building_name, start_name, end_name, use_stairs=True, use_elevators=Fa
     for i in range(len(path) - 1):
         pt1 = path[i]
         pt2 = path[i+1]
-        if building_graph[pt1][pt2]['type'] is 'path':
+        if building_graph[pt1][pt2]['type'] == 'path':
             # this edge is a path, add it to the current floor
             separated_paths[-1].append(path[i])
         else:

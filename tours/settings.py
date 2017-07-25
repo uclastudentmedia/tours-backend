@@ -90,7 +90,7 @@ WSGI_APPLICATION = 'tours.wsgi.application'
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
 # 'sqlite3', 'mysql', or 'psql'
-DATABASE_IN_USE = 'sqlite3'
+DATABASE_IN_USE = 'psql'
 
 if DATABASE_IN_USE == 'sqlite3':
     DATABASES = {
@@ -114,8 +114,8 @@ elif DATABASE_IN_USE == 'psql':
     DATABASES = {
         'default': {
             'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': 'tours',
-            'USER': 'tours_admin',
+            'NAME': 'tours_dev',
+            'USER': 'tours_dev',
             'PASSWORD': 'bruin111',
             'HOST': 'localhost',
             'PORT': '',
