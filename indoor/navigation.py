@@ -131,53 +131,6 @@ def generate_building_graph(building):
     return building_graph
 
 
-def get_heuristic(building, use_stairs, use_elevators):
-    """
-    Creates a heuristic function based on whether stairs/elevators are used.
-    """
-
-    def level_diff(a, b):
-        a_floor = Floor.objects.get(name=a[2], building=building)
-        b_floor = Floor.objects.get(name=b[2], building=building)
-        diff = abs(a_floor.level - b_floor.level)
-        return diff
-
-    if not use_stairs and not use_elevators:
-        # no stairs or elevators are used, so can only be on the same floor
-        def heuristic(a, b):
-            return 0
-
-    elif use_stairs and not use_elevators:
-        # the cost of using level_diff flights of stairs
-        def heuristic(a, b):
-            return STAIR_COST * level_diff(a, b)
-
-    elif not use_stairs and use_elevators:
-        # the cost of using an elevator if the nodes are on different floors
-        def heuristic(a, b):
-            if type(a) is not tuple: # elevator dummy node
-                return ELEVATOR_COST / 2
-            if level_diff(a, b) == 0:
-                return 0
-            else:
-                return ELEVATOR_COST
-
-    elif use_stairs and use_elevators:
-        # calculate the minimum cost of using stairs/elevators
-        def heuristic(a, b):
-            if type(a) is not tuple: # elevator dummy node
-                return ELEVATOR_COST / 2
-            diff = level_diff(a, b)
-            if diff == 0:
-                return 0
-            else:
-                stair_cost = STAIR_COST * diff
-                elevator_cost = ELEVATOR_COST
-                return min(stair_cost, elevator_cost)
-
-    return heuristic
-
-
 def route(building_name, start_name, end_name, use_stairs=True, use_elevators=False):
     """
     @type building_name: str
@@ -238,9 +191,8 @@ def route(building_name, start_name, end_name, use_stairs=True, use_elevators=Fa
         building_graph.remove_edges_from(elevator_edges)
 
     # do routing
-    heuristic = get_heuristic(building, use_stairs, use_elevators)
-    path = nx.astar_path(building_graph, start_coords, end_coords,
-                         heuristic=heuristic, weight='weight')
+    path = nx.shortest_path(building_graph, start_coords, end_coords,
+                            weight='weight')
 
     # separate path into floors
     separated_paths = []
