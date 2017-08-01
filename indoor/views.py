@@ -118,8 +118,12 @@ def building_detail(request, landmark_id):
         raise Http404("Indoor navigation does not exist for this landmark.")
     results = []
     floors = landmark.building.floor_set.all() 
+    floor_poi = {}
     for floor in floors:
         POIs = floor.poi_set.all()
+        poi_list = []
         for poi in POIs:
-            results.append(poi.name)
+            poi_list.append(poi.name)
+        floor_poi[floor.name] = poi_list
+    results.append(floor_poi)
     return JsonResponse({"results": results})     
