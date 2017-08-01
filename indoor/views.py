@@ -1,14 +1,18 @@
 from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponse, Http404
-from .models import RoomPolygon
+from .models import RoomPolygon,Floor, Building
 from api.models import Landmark
 from .navigation import route
 from PIL import Image, ImageDraw, ImageFont
+from django.forms.models import model_to_dict
+from django.http import JsonResponse
+
 import matplotlib.pyplot as plt
 import magic
 import random
 import os.path
+
 
 INK = "red", "blue", "green", "yellow"
 
@@ -91,3 +95,31 @@ def navigation_image(request, landmark_id, start_room, end_room, start_end):
     image.save(response, "PNG")
     return response
 
+def building_list(request):
+    query_set =list(Building.objects.all())
+    buildings = []
+    for item in query_set:
+        building = model_to_dict(item)
+        landmark_id = item.landmark.id
+        floors = list(item.floor_set.all())
+        building['landmark_id'] = landmark_id
+        building['floors'] = []
+        for floor in floors:
+            building['floors'].append(floor.name)
+        buildings.append(building)
+    return JsonResponse({"results": buildings})
+
+def building_detail(request, landmark_id):
+    try:
+        landmark = Landmark.objects.get(id=int(landmark_id))
+    except:
+        raise Http404("Landmark does not exist.")
+    if(landmark.building==None):
+        raise Http404("Indoor navigation does not exist for this landmark.")
+    results = []
+    floors = landmark.building.floor_set.all() 
+    for floor in floors:
+        POIs = floor.poi_set.all()
+        for poi in POIs:
+            results.append(poi.name)
+    return JsonResponse({"results": results})     
