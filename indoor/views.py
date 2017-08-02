@@ -96,12 +96,13 @@ def navigation_image(request, landmark_id, start_room, end_room, start_end):
     return response
 
 def building_list(request):
-    query_set =list(Building.objects.all())
+    query_set = Building.objects.all()
     buildings = []
     for item in query_set:
-        building = model_to_dict(item)
+        building = {}
         landmark_id = item.landmark.id
-        floors = list(item.floor_set.all())
+        floors = item.floor_set.all()
+        building['name'] = item.name
         building['landmark_id'] = landmark_id
         building['floors'] = []
         for floor in floors:
@@ -114,9 +115,11 @@ def building_detail(request, landmark_id):
         landmark = Landmark.objects.get(id=int(landmark_id))
     except:
         raise Http404("Landmark does not exist.")
-    if(landmark.building==None):
+    if not landmark.building:
         raise Http404("Indoor navigation does not exist for this landmark.")
-    results = []
+    results = {}
+    results['name'] = landmark.building.name
+    results['landmark_id'] = landmark.id
     floors = landmark.building.floor_set.all() 
     floor_poi = {}
     for floor in floors:
@@ -125,5 +128,5 @@ def building_detail(request, landmark_id):
         for poi in POIs:
             poi_list.append(poi.name)
         floor_poi[floor.name] = poi_list
-    results.append(floor_poi)
+    results['pois'] = floor_poi
     return JsonResponse({"results": results})     

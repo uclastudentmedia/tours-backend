@@ -42,7 +42,7 @@ def load(delete=True):
         {
             'name': 'ackerman',
             'floors': ['b', '2'],
-            'landmark_id': 1,
+            'landmark_id': 31,
         },
         #{
         #    'name': 'boelter',
