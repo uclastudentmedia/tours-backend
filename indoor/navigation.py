@@ -2,11 +2,8 @@ from .models import Building, Floor, RoomPolygon, POI, Path
 import networkx as nx
 import math
 
-# TODO: save graphs in database when loading shapefiles
-
 """
 Public exports:
-get_floor
 route
 """
 
@@ -18,19 +15,6 @@ ELEVATOR_THRESHOLD = 5
 
 # cost to use elevators
 ELEVATOR_COST = STAIR_COST * ELEVATOR_THRESHOLD
-
-
-def get_floor(G):
-    """
-    @type G: nx.Graph
-    @return: the floor that this graph is on
-    @rtype: str
-    """
-    return G.floor
-
-
-def set_floor(G, name):
-    G.floor = name
 
 
 def to_3d_coords(xy, floor_name):
