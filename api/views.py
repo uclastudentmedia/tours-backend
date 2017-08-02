@@ -36,6 +36,11 @@ def landmark_detail(request, id):
     landmark_json['image_count'] = landmark.gallery.photos.count()
     landmark_json['attributes'] = landmark.attributes
 
+    if landmark.building:
+        landmark_json['indoor_nav'] = True
+    else:
+        landmark_json['indoor_nav'] = False
+
     del landmark_json['gallery']
 
     return JsonResponse({ "results": landmark_json })
