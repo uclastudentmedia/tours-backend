@@ -1,9 +1,9 @@
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, Http404
-from .models import RoomPolygon,Floor, Building
+from .models import RoomPolygon, Floor, Building, POI
 from api.models import Landmark
-from .navigation import route
+from . import navigation
 from PIL import Image, ImageDraw, ImageFont
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import magic
 import random
 import os.path
+import networkx as nx
 
 
 INK = "red", "blue", "green", "yellow"
@@ -78,22 +79,6 @@ def navigation_route(request, building_name, floor, start_room, end_room):
     image.save(response, "PNG")
     return response
 
-def navigation_image(request, landmark_id, start_room, end_room, start_end):
-    '''  
-    try:
-        landmark = Landmark.objects.get(id=int(landmark_id))
-    except:
-        raise Http404("Landmark does not exist")
-    '''
-    #start is 0
-    if (start_end==0):
-        image=generate_image(); #returns starting room highlighted and path drawn
-    #end is 1
-    else:
-        image=generate_image(); #returns image with ending room highlighted
-    response=HttpResponse(content_type="image/png")
-    image.save(response, "PNG")
-    return response
 
 def building_list(request):
     query_set = Building.objects.all()
@@ -109,6 +94,7 @@ def building_list(request):
             building['floors'].append(floor.name)
         buildings.append(building)
     return JsonResponse({"results": buildings})
+
 
 def building_detail(request, landmark_id):
     try:
@@ -130,3 +116,29 @@ def building_detail(request, landmark_id):
         floor_poi[floor.name] = poi_list
     results['pois'] = floor_poi
     return JsonResponse({"results": results})     
+
+
+def route(request, landmark_id, start, end):
+
+    landmark_id = int(landmark_id)
+    building = get_object_or_404(Building, landmark__id=landmark_id)
+
+    try:
+        paths,floors = navigation.route(building.name, start, end)
+    except (POI.DoesNotExist, nx.NetworkXNoPath, nx.NetworkXError) as e:
+        raise Http404(e)
+
+    image_urls = []
+    for path, floor in zip(paths, floors):
+        # TODO: integrate with image saving code
+        # image_url = GETIMAGEURL(path, floor)
+        # images_urls.append(image_url)
+        image_urls.append("test.bruinmobile.com/" + floor)
+
+    return JsonResponse({
+        'building': building.name,
+        'landmark_id': landmark_id,
+        'start': start,
+        'end': end,
+        'images': image_urls
+    })

@@ -131,7 +131,8 @@ def generate_building_graph(building):
     return building_graph
 
 
-def route(building_name, start_name, end_name, use_stairs=True, use_elevators=False):
+def route(building_name, start_name, end_name,
+          use_stairs=True, use_elevators=False):
     """
     @type building_name: str
     @type start_name: str
