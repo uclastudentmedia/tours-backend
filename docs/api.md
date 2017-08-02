@@ -16,17 +16,17 @@ GET /api/landmark/
 Response:
 ```js
 {
-	"results": [
-		{
-			"name": "1310 Law Building",
-			"lat": 34.07265053,
-			"long": -118.4388012,
-			"priority": 612,
-			"category_id": null,
-			"id": 1
-		},
-		// ...
-	]
+    "results": [
+        {
+            "name": "1310 Law Building",
+            "lat": 34.07265053,
+            "long": -118.4388012,
+            "priority": 612,
+            "category_id": null,
+            "id": 1
+        },
+        // ...
+    ]
 }
 ```
 
@@ -85,8 +85,8 @@ Response:
          "category_id":1001,
          "name":"Parking"
       },
-	  // ...
-	]
+      // ...
+    ]
 }
 ```
 
@@ -111,8 +111,8 @@ Response:
          "duration":3600,
          "id":1
       },
-	  // ...
-	]
+      // ...
+    ]
 }
 ```
 

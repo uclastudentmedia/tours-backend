@@ -60,12 +60,10 @@ def tour_list(request):
     for tour in tours:
         tour= model_to_dict(tour)
         tour['landmark_ids'] = list(tour['landmarks'].values('id'))
-	tour['landmark_ids'] = [l["id"] for l in tour['landmark_ids']] 
+        tour['landmark_ids'] = [l["id"] for l in tour['landmark_ids']]
         del tour['landmarks']
         tours_list.append(tour)
-    return JsonResponse({
-	"results": tours_list
-    })
+    return JsonResponse({"results": tours_list})
 
 def tour_detail(request, id):
     try:
