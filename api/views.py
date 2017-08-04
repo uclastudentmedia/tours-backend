@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views import generic
 from django.http import JsonResponse
 from django.forms.models import model_to_dict
@@ -27,13 +27,9 @@ def landmark_list(request):
 
 
 def landmark_detail(request, id):
-    try:
-        landmark= Landmark.objects.get(id=int(id))
-    except Landmark.DoesNotExist:
-        raise Http404("Landmark does not exist")
+    landmark = get_object_or_404(Landmark, id=int(id))
 
     landmark_json = model_to_dict(landmark)
-    landmark_json['image_count'] = landmark.gallery.photos.count()
     landmark_json['attributes'] = landmark.attributes
 
     if landmark.building:
@@ -43,7 +39,16 @@ def landmark_detail(request, id):
 
     del landmark_json['gallery']
 
+    landmark_json['images'] = [{
+        'thumbnail': photo.get_thumbnail_url(),
+        'display': photo.get_display_url(),
+        'original': photo.image.url,
+    } for photo in landmark.gallery.photos.all()]
+
+    landmark_json['image_count'] = len(landmark_json['images'])
+
     return JsonResponse({ "results": landmark_json })
+
 
 def category_list(request):
     categories = Category.objects.values('id',

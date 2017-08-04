@@ -53,15 +53,31 @@ Response:
             "Nachos Supreme":2.6
          }
       },
+      "images": [
+         {
+            "original": "/media/photologue/photos/675_1.jpg",
+            "thumbnail": "/media/photologue/photos/cache/675_1_thumbnail.jpg",
+            "display": "/media/photologue/photos/cache/675_1_display.jpg"
+         },
+         // ...
+      ],
       "image_count":2,
       "id":675
    }
 }
 ```
 - `attributes`: a object with arbitrary attributes
+- `images`: URLs to various sizes of each image
+    - `original`: The full image. Only use if you need high resolution.
+    - `display`: A smaller image (400px wide)
+    - `thumbnail`: An even smaller image (100px x 75px, cropped to fit)
 
 ### Landmark Images
+
+> This is deprecated. Use the urls from [landmark detail](#landmark-detail)
+
 Get an image of a landmark
+
 ```
 GET /images/landmark/<landmark-id>/<img-index>
 ```
