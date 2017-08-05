@@ -11,35 +11,75 @@ from PIL import Image, ImageDraw, ImageFont
 import os
 import networkx as nx
 
-def get_route_image_path(building_id, start_room, end_room):
-    directory = "floor_plans/cache/"
-    filename = str(building_id) + "_" + start_room + "_" + end_room + ".png"
-    return os.path.join(settings.MEDIA_ROOT, directory, filename)
 
-def get_floor_plan_path(building_id, floor_string):
+# TODO: function to clear cache
+
+
+def get_floor_plan_path(landmark_id, floor_name):
     directory = "floor_plans/base/"
-    filename = str(building_id) + "_" + floor_string + ".png"
+    filename = str(landmark_id) + "_" + floor_name + ".png"
     return os.path.join(settings.MEDIA_ROOT, directory, filename)
 
-# Richard TODO: fix params and how they're used
-def draw_route_image(building_id, floor, path, start, end):
+
+def _get_route_image_relpath(landmark_id, floor_name, start_coords, end_coords):
+    directory = "floor_plans/cache/"
+
+    start_x, start_y = start_coords
+    end_x, end_y = end_coords
+
+    filename = "{id}_{floor}_{sx}-{sy}_{ex}-{ey}.png".format(
+        id=landmark_id, floor=floor_name,
+        sx=start_x, sy=(-start_y), ex=end_x, ey=(-end_y))
+
+    return os.path.join(directory, filename)
+
+
+def get_route_image_path(landmark_id, floor_name, start_coords, end_coords):
+    relpath = _get_route_image_relpath(landmark_id, floor_name,
+                                        start_coords, end_coords)
+    return os.path.join(settings.MEDIA_ROOT, relpath)
+
+
+def get_route_image_url(landmark_id, floor_name, start_coords, end_coords):
+    relpath = _get_route_image_relpath(landmark_id, floor_name,
+                                        start_coords, end_coords)
+    return os.path.join(settings.MEDIA_URL, relpath)
+
+
+def draw_route_image(landmark_id, floor_name, path, start_name, end_name):
     # TODO: probably clean up etc.
-    image_path = get_floor_plan_path(building_name, floor)
+
+    # check if image is cached
+    cache_image_path = get_route_image_path(landmark_id, floor_name,
+                                            path[0], path[-1])
+    if os.path.isfile(cache_image_path):
+        # touch the cached file
+        os.utime(cache_image_path, None)
+        return
+
+    # image is not cached, draw it
+
+    building = Building.objects.get(landmark__id=landmark_id)
+    floor = Floor.objects.get(name=floor_name, building=building)
+    start = POI.objects.get(name=start_name, floor__building=building)
+    end = POI.objects.get(name=end_name, floor__building=building)
+
+    base_image_path = get_floor_plan_path(landmark_id, floor.name)
     try:
-        image = Image.open(image_path)
+        image = Image.open(base_image_path)
     except:
-        raise Http404("Image " + newfilename + " does not exist or can't be opened")
+        raise Http404("Image " + base_image_path + " does not exist or can't be opened")
     draw = ImageDraw.Draw(image)
 
-    if start_room:
-        # fill in rooms
-        start_room_data = RoomPolygon.objects.get(name=start_room)
+    # fill in rooms
+    if start.floor == floor:
+        start_room_data = RoomPolygon.objects.get(name=start_name, floor=floor)
         start_border = start_room_data.geom.coords
         # room only has one polygon since we're using PolygonField
         start_border = [(n[0], -n[1]) for n in start_border[0]]
         draw.polygon(start_border, fill=(255, 114, 114, 255))
-    if end_room:
-        end_room_data = RoomPolygon.objects.get(name=end_room)
+    if end.floor == floor:
+        end_room_data = RoomPolygon.objects.get(name=end_name, floor=floor)
         end_border = end_room_data.geom.coords
         # room only has one polygon since we're using PolygonField
         end_border = [(n[0], -n[1]) for n in end_border[0]]
@@ -61,32 +101,22 @@ def draw_route_image(building_id, floor, path, start, end):
     # draw text centered in room
     font = ImageFont.truetype(os.path.join(settings.MEDIA_ROOT,
         "fonts/Roboto-Bold.ttf"), 40)
-    if start_room:
+    if start.floor == floor:
         start_centroid = start_room_data.geom.centroid
-        text_width, text_height = draw.textsize(start_room, font=font)
+        text_width, text_height = draw.textsize(start_name, font=font)
         start_coords = (start_centroid.x - text_width / 2,
                 -start_centroid.y - text_height / 2)
-        draw.text(start_coords, start_room, font=font, fill=(0, 188, 169, 255))
-    if end_room:
+        draw.text(start_coords, start_name, font=font, fill=(0, 188, 169, 255))
+    if end.floor == floor:
         end_centroid = end_room_data.geom.centroid
-        text_width, text_height = draw.textsize(end_room, font=font)
+        text_width, text_height = draw.textsize(end_name, font=font)
         end_coords = (end_centroid.x - text_width / 2,
                 -end_centroid.y - text_height / 2)
-        draw.text(end_coords, end_room, font=font, fill=(0, 188, 169, 255))
+        draw.text(end_coords, end_name, font=font, fill=(0, 188, 169, 255))
 
     # save modified image
-    filename = get_image_filesys_path(building_id, start_room, end_room)
-    image.save(filename, "PNG")
+    image.save(cache_image_path, "PNG")
 
-# Richard TODO: also fix these params
-def get_image_url(building_id, floor, path, start_room, end_room):
-    filename = get_image_filesys_path(building_id, start_room, end_room)
-    if not os.path.isfile(filename):
-        print "adding file to cache", newfilename
-        draw_route_image_and_save(building_id, floor, start_room, end_room)
-    else:
-        print "read cached file", filename 
-    # Richard TODO: return URL here
 
 def building_list(request):
     query_set = Building.objects.all()
@@ -126,26 +156,28 @@ def building_detail(request, landmark_id):
     return JsonResponse({"results": results})     
 
 
-def route(request, landmark_id, start, end):
+def route(request, landmark_id, start_name, end_name):
     landmark_id = int(landmark_id)
     building = get_object_or_404(Building, landmark__id=landmark_id)
 
     try:
-        paths,floors = navigation.route(building.name, start, end)
+        paths,floors = navigation.route(building.name, start_name, end_name)
     except (POI.DoesNotExist, nx.NetworkXNoPath, nx.NetworkXError) as e:
         raise Http404(e)
 
     image_urls = []
     for path, floor in zip(paths, floors):
-        # TODO: integrate with image saving code
-        # image_url = GETIMAGEURL(path, floor)
-        # images_urls.append(image_url)
-        image_urls.append("test.bruinmobile.com/" + floor)
+        if not path:
+            raise Exception("path is empty")
+        draw_route_image(landmark_id, floor, path, start_name, end_name)
+        image_url = get_route_image_url(landmark_id, floor,
+                                        path[0], path[-1])
+        image_urls.append(image_url)
 
     return JsonResponse({
         'building': building.name,
         'landmark_id': landmark_id,
-        'start': start,
-        'end': end,
+        'start': start_name,
+        'end': end_name,
         'images': image_urls
     })
