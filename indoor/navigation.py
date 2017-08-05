@@ -61,7 +61,6 @@ def generate_floor_graph(floor):
         G[pt1][pt2]['weight'] = distance
         G[pt1][pt2]['type'] = 'path'
 
-    set_floor(G, floor.name)
     return G
 
 
