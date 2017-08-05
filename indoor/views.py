@@ -1,45 +1,34 @@
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, JsonResponse
+from django.forms.models import model_to_dict
+
 from .models import RoomPolygon, Floor, Building, POI
 from api.models import Landmark
 from . import navigation
-from PIL import Image, ImageDraw, ImageFont
-from django.forms.models import model_to_dict
-from django.http import JsonResponse
 
-import matplotlib.pyplot as plt
-import magic
-import random
-import os.path
+from PIL import Image, ImageDraw, ImageFont
+import os
 import networkx as nx
 
+def get_route_image_path(building_id, start_room, end_room):
+    directory = "floor_plans/cache/"
+    filename = str(building_id) + "_" + start_room + "_" + end_room + ".png"
+    return os.path.join(settings.MEDIA_ROOT, directory, filename)
 
-INK = "red", "blue", "green", "yellow"
-
-def generate_image():
-    image = Image.new("RGB", (800, 600), random.choice(INK))
-    return image
-
-def get_image_filesys_path(building_id, start_room, end_room):
-    filename = "floor_plans/cache/" + building_id + "_" + start_room +\
-        "_" + end_room + ".png"
-    return os.path.join(settings.MEDIA_ROOT, filename)
-
-# Richard TODO: change name to ID, and also the actual filenames
-def get_floor_plan_image(building_name, floor_string):
-    filename = "floor_plans/" + building_name.title() + "_" + floor_string + ".png"
-    newfilename = os.path.join(settings.MEDIA_ROOT, filename)
-    try:
-        img = Image.open(newfilename)
-    except:
-        raise Http404("Image " + newfilename + " does not exist or can't be opened")
-    return img
+def get_floor_plan_path(building_id, floor_string):
+    directory = "floor_plans/base/"
+    filename = str(building_id) + "_" + floor_string + ".png"
+    return os.path.join(settings.MEDIA_ROOT, directory, filename)
 
 # Richard TODO: fix params and how they're used
-def draw_route_image_and_save(building_name, building_id, floor, path, start_room=None, end_room=None):
+def draw_route_image(building_id, floor, path, start, end):
     # TODO: probably clean up etc.
-    image = get_floor_plan_image(building_name, floor)
+    image_path = get_floor_plan_path(building_name, floor)
+    try:
+        image = Image.open(image_path)
+    except:
+        raise Http404("Image " + newfilename + " does not exist or can't be opened")
     draw = ImageDraw.Draw(image)
 
     if start_room:
@@ -138,7 +127,6 @@ def building_detail(request, landmark_id):
 
 
 def route(request, landmark_id, start, end):
-
     landmark_id = int(landmark_id)
     building = get_object_or_404(Building, landmark__id=landmark_id)
 
