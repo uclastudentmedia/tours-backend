@@ -21,6 +21,12 @@ def generate_image():
     image = Image.new("RGB", (800, 600), random.choice(INK))
     return image
 
+def get_image_filesys_path(building_id, start_room, end_room):
+    filename = "floor_plans/cache/" + building_id + "_" + start_room +\
+        "_" + end_room + ".png"
+    return os.path.join(settings.MEDIA_ROOT, filename)
+
+# Richard TODO: change name to ID, and also the actual filenames
 def get_floor_plan_image(building_name, floor_string):
     filename = "floor_plans/" + building_name.title() + "_" + floor_string + ".png"
     newfilename = os.path.join(settings.MEDIA_ROOT, filename)
@@ -30,55 +36,68 @@ def get_floor_plan_image(building_name, floor_string):
         raise Http404("Image " + newfilename + " does not exist or can't be opened")
     return img
 
-def navigation_route(request, building_name, floor, start_room, end_room):
+# Richard TODO: fix params and how they're used
+def draw_route_image_and_save(building_name, building_id, floor, path, start_room=None, end_room=None):
     # TODO: probably clean up etc.
     image = get_floor_plan_image(building_name, floor)
-    start_room_data = RoomPolygon.objects.get(name=start_room)
-    end_room_data = RoomPolygon.objects.get(name=end_room)
     draw = ImageDraw.Draw(image)
 
-    # fill in rooms
-    start_border = start_room_data.geom.coords
-    # room only has one polygon since we're using PolygonField
-    start_border = [(n[0], -n[1]) for n in start_border[0]]
-    draw.polygon(start_border, fill=(255, 114, 114, 255))
-    end_border = end_room_data.geom.coords
-    # room only has one polygon since we're using PolygonField
-    end_border = [(n[0], -n[1]) for n in end_border[0]]
-    draw.polygon(end_border, fill=(255, 114, 114, 255))
+    if start_room:
+        # fill in rooms
+        start_room_data = RoomPolygon.objects.get(name=start_room)
+        start_border = start_room_data.geom.coords
+        # room only has one polygon since we're using PolygonField
+        start_border = [(n[0], -n[1]) for n in start_border[0]]
+        draw.polygon(start_border, fill=(255, 114, 114, 255))
+    if end_room:
+        end_room_data = RoomPolygon.objects.get(name=end_room)
+        end_border = end_room_data.geom.coords
+        # room only has one polygon since we're using PolygonField
+        end_border = [(n[0], -n[1]) for n in end_border[0]]
+        draw.polygon(end_border, fill=(255, 114, 114, 255))
 
     # draw lines
     line_fill = (0, 113, 188, 255)
-    nodes, floors = route(building_name, start_room, end_room)
-    nodes = nodes[0]
-    nodes = [(n[0], -n[1]) for n in nodes]
-    for i in range(0, len(nodes)-1):
-        draw.line((nodes[i], nodes[i+1]), fill=line_fill, width=18)
+    #nodes, floors = route(building_name, start_room, end_room)
+    #nodes = nodes[0]
+    path = [(n[0], -n[1]) for n in path]
+    for i in range(0, len(path)-1):
+        draw.line((path[i], path[i+1]), fill=line_fill, width=18)
 
-    # draw nodes
+    # draw path
     rad = 10
-    for (x,y) in nodes:
+    for (x,y) in path:
         draw.ellipse([x - rad, y - rad, x + rad, y + rad], fill=line_fill)
 
     # draw text centered in room
     font = ImageFont.truetype(os.path.join(settings.MEDIA_ROOT,
         "fonts/Roboto-Bold.ttf"), 40)
-    start_centroid = start_room_data.geom.centroid
-    text_width, text_height = draw.textsize(start_room, font=font)
-    start_coords = (start_centroid.x - text_width / 2,
-            -start_centroid.y - text_height / 2)
-    draw.text(start_coords, start_room, font=font, fill=(0, 188, 169, 255))
-    end_centroid = end_room_data.geom.centroid
-    text_width, text_height = draw.textsize(end_room, font=font)
-    end_coords = (end_centroid.x - text_width / 2,
-            -end_centroid.y - text_height / 2)
-    draw.text(end_coords, end_room, font=font, fill=(0, 188, 169, 255))
+    if start_room:
+        start_centroid = start_room_data.geom.centroid
+        text_width, text_height = draw.textsize(start_room, font=font)
+        start_coords = (start_centroid.x - text_width / 2,
+                -start_centroid.y - text_height / 2)
+        draw.text(start_coords, start_room, font=font, fill=(0, 188, 169, 255))
+    if end_room:
+        end_centroid = end_room_data.geom.centroid
+        text_width, text_height = draw.textsize(end_room, font=font)
+        end_coords = (end_centroid.x - text_width / 2,
+                -end_centroid.y - text_height / 2)
+        draw.text(end_coords, end_room, font=font, fill=(0, 188, 169, 255))
 
-    # return modified image
-    response=HttpResponse(content_type="image/png")
-    image.save(response, "PNG")
-    return response
+    # save modified image
+    filename = get_image_filesys_path(building_id, start_room, end_room)
+    image.save(filename, "PNG")
 
+# Richard TODO: also fix these params
+def get_image_url(building_id, floor, path, start_room, end_room):
+    filename = get_image_filesys_path(building_id, start_room, end_room)
+    if not os.path.isfile(filename):
+        print "adding file to cache", newfilename
+        draw_route_image_and_save(building_id, floor, start_room, end_room)
+    else:
+        print "read cached file", filename 
+    # Richard TODO: return URL here
 
 def building_list(request):
     query_set = Building.objects.all()
