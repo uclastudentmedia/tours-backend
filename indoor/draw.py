@@ -5,7 +5,13 @@ import os
 from .models import RoomPolygon, Floor, Building, POI
 
 
-# TODO: function to clear cache
+def clear_cache():
+    # TODO: only delete x oldest files
+    directory = os.path.join(settings.MEDIA_ROOT, "floor_plans/cache/")
+    for filename in os.listdir(directory):
+        if filename.endswith(".png"):
+            path = os.path.join(directory, filename)
+            os.unlink(path)
 
 
 def get_floor_plan_path(landmark_id, floor_name):
