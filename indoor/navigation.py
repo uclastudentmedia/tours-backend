@@ -24,6 +24,13 @@ def to_3d_coords(xy, floor_name):
     return (int(xy[0]), int(xy[1]), floor_name)
 
 
+def extract_name(fullname):
+    """
+    Extracts the name of a stair/elevator, eg. 'ST1-1' -> 'ST1'
+    """
+    return fullname.split('-')[0]
+
+
 def generate_floor_graph(floor):
     """
     @type floor: Floor
@@ -77,9 +84,9 @@ def generate_building_graph(building):
 
     # add elevators to connect floors
     elevators = POI.objects.filter(type='elevator', floor__building=building)
-    elevator_names = [p.name for p in elevators.distinct('name')]
+    elevator_names = set([extract_name(p.name) for p in elevators])
     for elevator_name in elevator_names:
-        points = elevators.filter(name=elevator_name)
+        points = elevators.filter(name__contains=elevator_name)
         nodes = [to_3d_coords(p.geom.coords, p.floor.name) for p in points]
 
         # connect all elevator entrances to a dummy node
@@ -92,9 +99,9 @@ def generate_building_graph(building):
 
     # add stairs to connect floors
     stairs = POI.objects.filter(type='stair', floor__building=building)
-    stair_names = [p.name for p in stairs.distinct('name')]
+    stair_names = set([extract_name(p.name) for p in stairs])
     for stair_name in stair_names:
-        points = stairs.filter(name=stair_name).order_by('floor__level')
+        points = stairs.filter(name__contains=stair_name).order_by('floor__level')
         nodes = [to_3d_coords(p.geom.coords, p.floor.name) for p in points]
 
         for i in range(len(nodes) - 1):
