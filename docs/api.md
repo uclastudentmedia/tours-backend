@@ -5,6 +5,7 @@
 - [Categories](#categories)
 - [Tours](#tours)
 - [Outdoor Navigation](#outdoor-navigation)
+- [Indoor Navigation](#indoor-navigation)
 
 ## Landmarks
 
@@ -62,6 +63,7 @@ Response:
          // ...
       ],
       "image_count":2,
+      "indoor_nav": false,
       "id":675
    }
 }
@@ -71,6 +73,7 @@ Response:
     - `original`: The full image. Only use if you need high resolution.
     - `display`: A smaller image (400px wide)
     - `thumbnail`: An even smaller image (100px x 75px, cropped to fit)
+- `indoor_nav`: if indoor navigation is supported for this landmark
 
 ### Landmark Images
 
@@ -140,3 +143,82 @@ Turn-by-turn directions between 2 points. See [Mapzen turn by turn docs](https:/
 
 ### Optimized Route
 Get the fastest route to tour a bunch of points. See [Mapzen optimized route docs](https://mapzen.com/documentation/mobility/optimized/api-reference).
+
+
+## Indoor Navigation
+
+### Building List
+List of buildings that have indoor navigation.
+```
+GET /indoor/building/
+```
+Response:
+```js
+{
+    "results": [
+        {
+            "floors": [ "b", "2" ],
+            "landmark_id": 31,
+            "name": "ackerman"
+        },
+        // ...
+    ]
+}
+```
+
+Each building in this list will have `"indoor_nav": true` in its
+[landmark detail](#landmark-detail).
+
+### Buidling Detail
+List of routeable POIs in a building, organized by floor.
+```
+GET /indoor/building/<landmark-id>
+```
+Response:
+```js
+{
+    "results": {
+        "pois": {
+            "2": [
+                "2415",
+                "2400E",
+                "2400D",
+                "EL1-2",
+                "ST1-2"
+            ],
+            "b": [
+                "B105",
+                "ST1-b",
+                "EL1-b"
+            ]
+        },
+        "landmark_id": 31,
+        "name": "ackerman"
+    }
+}
+```
+
+### Indoor Routing
+Get images showing a route between 2 POIs.
+```
+GET /indoor/route/<landmark-id>/<start-name>/<end-name>
+```
+- `<start-name>` and `<end-name>` are names of POIs found in the
+  [building detail](#building-detail) page.
+
+Response:
+```js
+{
+    "building": "ackerman",
+    "start": "B105",
+    "images": [
+        "/media/floor_plans/cache/31_b_1247-732_1267-1113.png",
+        "/media/floor_plans/cache/31_2_1125-1113_1395-965.png"
+    ],
+    "landmark_id": 31,
+    "end": "2410"
+}
+```
+- `images`: an array of urls to floorplans with the route drawn on them, in order
+
+> TODO: If needed, we can support choosing whether to use stairs or elevators.
