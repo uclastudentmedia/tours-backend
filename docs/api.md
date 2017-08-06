@@ -169,7 +169,7 @@ Response:
 Each building in this list will have `"indoor_nav": true` in its
 [landmark detail](#landmark-detail).
 
-### Buidling Detail
+### Building Detail
 List of routeable POIs in a building, organized by floor.
 ```
 GET /indoor/building/<landmark-id>
