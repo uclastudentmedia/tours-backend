@@ -4,7 +4,7 @@ from picklefield.fields import PickledObjectField
 
 class Building(models.Model):
     name = models.CharField(max_length=80)
-    graph_pickled_data = PickledObjectField(default={})
+    graph = PickledObjectField(default={})
 
     def __str__(self):
         return self.name

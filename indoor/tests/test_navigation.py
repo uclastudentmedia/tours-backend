@@ -31,8 +31,7 @@ class NavigationTest(TestCase):
 
         self.floors = Floor.objects.all()
 
-        building_graph = nav.generate_building_graph(self.building)
-        self.building.graph_pickled_data = building_graph
+        self.building.graph = nav.generate_building_graph(self.building)
         self.building.save()
 
 
@@ -104,7 +103,7 @@ class NavigationTest(TestCase):
 
     def test_format_route_output(self):
         # RM_0 -> ST_0 -> ST_2 -> RM_2 -> EL_2
-        graph = self.building.graph_pickled_data
+        graph = self.building.graph
         path = nx.shortest_path(graph, (2, 2, '0'), (3, 3, '2'),
                                 weight='weight')
 

@@ -88,8 +88,7 @@ def load(delete=True, verbose=True, buildings=None):
             POI.objects.filter(floor=None).update(floor=floor)
             Path.objects.filter(floor=None).update(floor=floor)
 
-        building_graph = generate_building_graph(building)
-        building.graph_pickled_data = building_graph
+        building.graph = generate_building_graph(building)
         building.save()
 
 

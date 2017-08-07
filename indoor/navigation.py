@@ -120,7 +120,7 @@ def generate_building_graph(building):
 
 def get_building_graph(building, use_stairs, use_elevators):
     # get the routing network
-    building_graph = building.graph_pickled_data
+    building_graph = building.graph
 
     # remove stairs/elevators from the graph if they are not used
     types = nx.get_edge_attributes(building_graph, 'type')
