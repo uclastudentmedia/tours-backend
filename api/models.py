@@ -24,8 +24,8 @@ class Category(models.Model):
 
 class Landmark(models.Model):
     name = models.CharField(max_length=200, unique=True)
-    lat=models.FloatField()
-    long=models.FloatField()
+    lat=models.FloatField(default=0)
+    long=models.FloatField(default=0)
     text_description = models.TextField(null=True, blank=True, default="")
     category = models.ForeignKey(Category, null=True, blank=True, default=None)
     priority = models.IntegerField(default=1)

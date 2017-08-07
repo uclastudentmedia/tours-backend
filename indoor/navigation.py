@@ -10,11 +10,8 @@ route
 # cost to use stairs
 STAIR_COST = 10000
 
-# floor difference to prefer elevator over stairs
+# if floor difference <= ELEVATOR_THRESHOLD, prefer stairs
 ELEVATOR_THRESHOLD = 5
-
-# cost to use elevators
-ELEVATOR_COST = STAIR_COST * ELEVATOR_THRESHOLD
 
 
 def to_3d_coords(xy, floor_name):
@@ -26,9 +23,9 @@ def to_3d_coords(xy, floor_name):
 
 def extract_name(fullname):
     """
-    Extracts the name of a stair/elevator, eg. 'ST1-1' -> 'ST1'
+    Extracts the name of a stair/elevator, eg. 'ST1_1' -> 'ST1'
     """
-    return fullname.split('-')[0]
+    return fullname.split('_')[0]
 
 
 def generate_floor_graph(floor):
@@ -94,7 +91,7 @@ def generate_building_graph(building):
         nodes = [dummy_node] + nodes
 
         # total cost of using elevators is weight * 2
-        weight = ELEVATOR_COST / 2
+        weight = (STAIR_COST * ELEVATOR_THRESHOLD)/2 + 1
         building_graph.add_star(nodes, weight=weight, type='elevator')
 
     # add stairs to connect floors
@@ -119,6 +116,48 @@ def generate_building_graph(building):
     #nx.freeze(building_graph)
 
     return building_graph
+
+
+def get_building_graph(building, use_stairs, use_elevators):
+    # get the routing network
+    building_graph = building.graph_pickled_data
+
+    # remove stairs/elevators from the graph if they are not used
+    types = nx.get_edge_attributes(building_graph, 'type')
+    if not use_stairs:
+        stair_edges = [edge for edge in types if types[edge] == 'stair']
+        building_graph.remove_edges_from(stair_edges)
+    if not use_elevators:
+        elevator_edges = [edge for edge in types if types[edge] == 'elevator']
+        building_graph.remove_edges_from(elevator_edges)
+
+    return building_graph
+
+
+def format_route_output(building_graph, path):
+    # separate path into floors
+    separated_paths = []
+    separated_paths.append([path[0]])
+
+    for i in range(len(path) - 1):
+        pt1 = path[i]
+        pt2 = path[i+1]
+        if building_graph[pt1][pt2]['type'] != 'path':
+            # this edge is a stair/elevator, so there is a new floor
+            separated_paths.append([])
+        # add this point to the current floor
+        separated_paths[-1].append(pt2)
+
+    # filter out empty floors
+    separated_paths = filter(lambda x: len(x) > 1, separated_paths)
+
+    # get a list of the floor names
+    floors = [floor[0][2] for floor in separated_paths]
+
+    # change 3d coords back to 2d coords
+    paths_2d = [[(x,y) for (x,y,z) in floor] for floor in separated_paths]
+
+    return (paths_2d, floors)
 
 
 def route(building_name, start_name, end_name,
@@ -170,45 +209,12 @@ def route(building_name, start_name, end_name,
     end_coords = to_3d_coords(end.geom.coords, end.floor.name)
 
     # get the routing network
-    building_graph = building.graph_pickled_data
-
-    # remove stairs/elevators from the graph if they are not used
-    types = nx.get_edge_attributes(building_graph, 'type')
-    if not use_stairs:
-        stair_edges = [edge for edge in types if types[edge] == 'stair']
-        building_graph.remove_edges_from(stair_edges)
-    if not use_elevators:
-        elevator_edges = [edge for edge in types if types[edge] == 'elevator']
-        building_graph.remove_edges_from(elevator_edges)
+    building_graph = get_building_graph(building, use_stairs, use_elevators)
 
     # do routing
     path = nx.shortest_path(building_graph, start_coords, end_coords,
                             weight='weight')
 
-    # separate path into floors
-    separated_paths = []
-    separated_paths.append([])
-
-    for i in range(len(path) - 1):
-        pt1 = path[i]
-        pt2 = path[i+1]
-        if building_graph[pt1][pt2]['type'] == 'path':
-            # this edge is a path, add it to the current floor
-            separated_paths[-1].append(path[i])
-        else:
-            # this edge is a stair/elevator, so there is a new floor
-            separated_paths.append([])
-
-    # add the last node to the last floor
-    separated_paths[-1].append(path[-1])
-
-    # filter out empty floors
-    separated_paths = filter(lambda x: len(x) > 0, separated_paths)
-
-    # get a list of the floor names
-    floors = [floor[0][2] for floor in separated_paths]
-
-    # change 3d coords back to 2d coords
-    paths_2d = [[(x,y) for (x,y,z) in floor] for floor in separated_paths]
-
-    return (paths_2d, floors)
+    # format output
+    output = format_route_output(building_graph, path)
+    return output

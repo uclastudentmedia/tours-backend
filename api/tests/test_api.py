@@ -14,8 +14,7 @@ class ApiLandmarkListTest(TestCase):
         # create some test Landmarks
         cls.landmarks = []
         for id in range(1, 4):
-            cls.landmarks.append(Landmark.objects.create(id=id, name=str(id),
-                                           lat=0, long=0, text_description=''))
+            cls.landmarks.append(Landmark.objects.create(id=id, name=str(id)))
 
     def setUp(self):
         self.client = Client()
@@ -62,8 +61,7 @@ class ApiLandmarkDetailTest(TestCase):
         # create some test Landmarks
         cls.landmarks = []
         for id in range(1, 4):
-            cls.landmarks.append(Landmark.objects.create(id=id, name=str(id),
-                                           lat=0, long=0, text_description=''))
+            cls.landmarks.append(Landmark.objects.create(id=id, name=str(id)))
 
     def setUp(self):
         self.client = Client()

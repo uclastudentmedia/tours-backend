@@ -26,13 +26,12 @@ class CategoryTest(TestCase):
 
     def test_landmark_creation(self):
         # Landmark objects can be created with a Category
-        l = Landmark.objects.create(name='', category=self.category,
-                                           lat=0, long=0)
+        l = Landmark.objects.create(name='', category=self.category)
         self.assertEqual(Landmark.objects.get(id=l.id).category, self.category)
 
     def test_landmark_modification(self):
         # A Landmark's category can be changed
-        l= Landmark.objects.create(name='', lat=0, long=0)
+        l= Landmark.objects.create(name='')
         self.assertIsNone(l.category)
         l.category = self.category
         l.save()

@@ -35,24 +35,26 @@ def load_paths(building, floor, verbose=True):
     paths_lm.save(strict=True, verbose=verbose)
 
 
-def load(delete=True):
+# holds all of the buildings to load
+INDOOR_BUILDINGS = [
+    {
+        'name': 'ackerman',
+        'floors': ['b', '2'],
+        'landmark_id': 31,
+    },
+    #{
+    #    'name': 'boelter',
+    #    'floors': ['4', '6'],
+    #    'landmark_id': 67,
+    #},
+]
 
-    # holds all of the buildings to load
-    buildings = [
-        {
-            'name': 'ackerman',
-            'floors': ['b', '2'],
-            'landmark_id': 31,
-        },
-        #{
-        #    'name': 'boelter',
-        #    'floors': ['4', '6'],
-        #    'landmark_id': 67,
-        #},
-    ]
-
+def load(delete=True, verbose=True, buildings=None):
     if delete:
         delete_gis_data()
+
+    if not buildings:
+        buildings = INDOOR_BUILDINGS
 
     for building_dict in buildings:
         building_name = building_dict['name']
@@ -69,12 +71,13 @@ def load(delete=True):
                                          building=building,
                                          level=index)
 
-            print('Loading {b} {f}'.format(b=building, f=floor))
+            if verbose:
+                print('Loading {b} {f}'.format(b=building, f=floor))
 
             try:
-                load_rooms(building_name, floor_name)
-                load_points(building_name, floor_name)
-                load_paths(building_name, floor_name)
+                load_rooms(building_name, floor_name, verbose)
+                load_points(building_name, floor_name, verbose)
+                load_paths(building_name, floor_name, verbose)
             except Exception as e:
                 print('Failed to load {b} {f}'.format(b=building, f=floor))
                 print(e.message)
