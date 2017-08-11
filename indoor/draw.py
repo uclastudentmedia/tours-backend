@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.http import Http404
 from PIL import Image, ImageDraw, ImageFont
 import os
 
@@ -66,8 +67,8 @@ def draw_route_image(landmark_id, floor_name, path, start_name, end_name):
     base_image_path = get_floor_plan_path(landmark_id, floor.name)
     try:
         image = Image.open(base_image_path)
-    except:
-        raise Http404("Image " + base_image_path + " does not exist or can't be opened")
+    except IOError as e:
+        raise Http404(e)
     draw = ImageDraw.Draw(image)
 
     # fill in rooms
@@ -86,8 +87,6 @@ def draw_route_image(landmark_id, floor_name, path, start_name, end_name):
 
     # draw lines
     line_fill = (0, 113, 188, 255)
-    #nodes, floors = route(building_name, start_room, end_room)
-    #nodes = nodes[0]
     path = [(n[0], -n[1]) for n in path]
     for i in range(0, len(path)-1):
         draw.line((path[i], path[i+1]), fill=line_fill, width=18)
