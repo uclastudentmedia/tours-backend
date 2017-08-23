@@ -46,10 +46,6 @@ class ApiLandmarkListTest(TestCase):
         # this endpoint should give basic data, including coords and name
         for attr in ['id', 'lat', 'long', 'name', 'category_id']:
             landmark[attr]
-        # it should not give detailed data, like text descriptions or pictures
-        for attr in ['text_description']:
-            with self.assertRaises(KeyError):
-                landmark[attr]
 
 
 class ApiLandmarkDetailTest(TestCase):

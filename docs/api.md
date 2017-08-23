@@ -10,7 +10,7 @@
 ## Landmarks
 
 ### Landmark List
-Basic info about all of the landmarks
+Get all information about all of the landmarks
 ```
 GET /api/landmark/
 ```
@@ -24,7 +24,8 @@ Response:
             "long": -118.4388012,
             "priority": 612,
             "category_id": null,
-            "id": 1
+            "id": 1,
+            // ...
         },
         // ...
     ]

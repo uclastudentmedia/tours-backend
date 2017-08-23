@@ -12,30 +12,18 @@ def index(request):
     context = {}
     return render(request, 'api/index.html', context)
 
-def landmark_list(request):
-    queryset = Landmark.objects.annotate(category_id=F('category__category_id'))
-    landmarks = queryset.values('id',
-                                'name',
-                                'lat',
-                                'long',
-                                'category_id',
-                                'priority',
-                                )
-    return JsonResponse({
-        "results": list(landmarks)
-    })
 
-
-def landmark_detail(request, id):
-    landmark = get_object_or_404(Landmark, id=int(id))
-
+def _get_landmark_detail(landmark):
     landmark_json = model_to_dict(landmark)
+
+    try:
+        landmark_json['category_id'] = landmark.category.id
+    except AttributeError:
+        landmark_json['category_id'] = None
+
     landmark_json['attributes'] = landmark.attributes
 
-    if landmark.building:
-        landmark_json['indoor_nav'] = True
-    else:
-        landmark_json['indoor_nav'] = False
+    landmark_json['indoor_nav'] = (landmark.building is not None)
 
     del landmark_json['gallery']
 
@@ -45,8 +33,17 @@ def landmark_detail(request, id):
         'original': photo.image.url,
     } for photo in landmark.gallery.photos.all()]
 
-    landmark_json['image_count'] = len(landmark_json['images'])
+    return landmark_json
 
+
+def landmark_list(request):
+    landmarks = [_get_landmark_detail(l) for l in Landmark.objects.all()]
+    return JsonResponse({ "results": landmarks })
+
+
+def landmark_detail(request, id):
+    landmark = get_object_or_404(Landmark, id=int(id))
+    landmark_json = _get_landmark_detail(landmark)
     return JsonResponse({ "results": landmark_json })
 
 
