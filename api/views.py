@@ -1,17 +1,12 @@
-from django.shortcuts import render, get_object_or_404
-from django.views import generic
-from django.http import JsonResponse
+from django.shortcuts import render
+from django.http import JsonResponse, Http404
 from django.forms.models import model_to_dict
-from django.http import Http404
-from django.db.models import F
-import json
 
 from .models import Landmark, Category, Tour
 
 def index(request):
     context = {}
     return render(request, 'api/index.html', context)
-
 
 def _get_landmark_detail(landmark):
     landmark_json = model_to_dict(landmark)
@@ -36,15 +31,27 @@ def _get_landmark_detail(landmark):
     return landmark_json
 
 
+# Caching landmarks
+LANDMARKS_CACHE = [_get_landmark_detail(l) for l in Landmark.objects.all()]
+
+def get_landmark_list():
+    return LANDMARKS_CACHE
+
+def get_landmark_detail(id):
+    try:
+        return filter(lambda l: l['id'] == int(id), LANDMARKS_CACHE)[0]
+    except IndexError:
+        raise Http404('No such landmark id=' + id)
+
+
 def landmark_list(request):
-    landmarks = [_get_landmark_detail(l) for l in Landmark.objects.all()]
+    landmarks = get_landmark_list()
     return JsonResponse({ "results": landmarks })
 
 
 def landmark_detail(request, id):
-    landmark = get_object_or_404(Landmark, id=int(id))
-    landmark_json = _get_landmark_detail(landmark)
-    return JsonResponse({ "results": landmark_json })
+    landmark = get_landmark_detail(id)
+    return JsonResponse({ "results": landmark })
 
 
 def category_list(request):
