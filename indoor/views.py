@@ -10,19 +10,20 @@ from networkx import NetworkXNoPath, NetworkXError
 
 
 def building_list(request):
-    query_set = Building.objects.all()
-    buildings = []
-    for item in query_set:
-        building = {}
-        landmark_id = item.landmark.id
-        floors = item.floor_set.all()
-        building['name'] = item.name
-        building['landmark_id'] = landmark_id
-        building['floors'] = []
-        for floor in floors:
-            building['floors'].append(floor.name)
-        buildings.append(building)
-    return JsonResponse({"results": buildings})
+    buildings_list = []
+    for building in Building.objects.all():
+        building_json = {}
+        landmark_id = building.landmark.id
+        floors = building.floor_set.all()
+        pois = POI.objects.filter(floor__building=building)
+
+        building_json['name'] = building.name
+        building_json['landmark_id'] = landmark_id
+        building_json['floors'] = [floor.name for floor in floors]
+        building_json['pois'] = [poi.name for poi in pois]
+
+        buildings_list.append(building_json)
+    return JsonResponse({"results": buildings_list})
 
 
 def building_detail(request, landmark_id):
@@ -32,18 +33,16 @@ def building_detail(request, landmark_id):
         raise Http404("Landmark does not exist.")
     if not landmark.building:
         raise Http404("Indoor navigation does not exist for this landmark.")
+
+    floors = landmark.building.floor_set.all()
+    pois = POI.objects.filter(floor__building=landmark.building)
+
     results = {}
     results['name'] = landmark.building.name
     results['landmark_id'] = landmark.id
-    floors = landmark.building.floor_set.all() 
-    floor_poi = {}
-    for floor in floors:
-        POIs = floor.poi_set.all()
-        poi_list = []
-        for poi in POIs:
-            poi_list.append(poi.name)
-        floor_poi[floor.name] = poi_list
-    results['pois'] = floor_poi
+    results['floors'] = [floor.name for floor in floors]
+    results['pois'] = [poi.name for poi in pois]
+
     return JsonResponse({"results": results})     
 
 
