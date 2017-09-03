@@ -57,8 +57,7 @@ def landmark_detail(request, id):
 def category_list(request):
     categories = Category.objects.values('id',
                                         'name',
-                                        'sort_order',
-                                        'category_id')
+                                        'sort_order')
     return JsonResponse({
         "results": list(categories)
     })

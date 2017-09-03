@@ -18,7 +18,6 @@ def get_each_category():
         #print(item)
         categories.append(Category(name=item["description"],
                                    id=int(item["cat_id"]),
-                                   category_id=int(item["cat_id"]) + 1000,
                                    sort_order=item["sortorder"]))
     return categories
 
