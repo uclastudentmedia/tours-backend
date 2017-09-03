@@ -50,11 +50,11 @@ def landmark_list(request):
     cached_filename = os.path.join(settings.MEDIA_ROOT, 'landmark/cache/landmark.json')
     try:
         with open(cached_filename) as cached_file:
-            print "reading cached file " + cached_filename
+            # reading cached file
             json_data = cached_file.read()
             return HttpResponse(json_data, content_type="application/json")
     except IOError as err:
-        print err, ", using other cached data"
+        # error, using other cached data
         landmarks = get_landmark_list()
         return JsonResponse({ "results": landmarks })
 
