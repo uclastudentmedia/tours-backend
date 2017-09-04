@@ -12,8 +12,6 @@ from collections import OrderedDict
 class Category(models.Model):
     name = models.CharField(max_length=100)
     sort_order = models.IntegerField()
-    # the category's id within the app (not the database)
-    category_id = models.IntegerField()
 
     def __str__(self):
         return self.name

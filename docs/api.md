@@ -102,7 +102,6 @@ Response:
       {  
          "sort_order":2,
          "id":1,
-         "category_id":1001,
          "name":"Parking"
       },
       // ...

@@ -1,6 +1,8 @@
 from django.shortcuts import render
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, HttpResponse, Http404
 from django.forms.models import model_to_dict
+from django.conf import settings
+import os.path
 
 from .models import Landmark, Category, Tour
 
@@ -45,8 +47,16 @@ def get_landmark_detail(id):
 
 
 def landmark_list(request):
-    landmarks = get_landmark_list()
-    return JsonResponse({ "results": landmarks })
+    cached_filename = os.path.join(settings.MEDIA_ROOT, 'landmark/cache/landmark.json')
+    try:
+        with open(cached_filename) as cached_file:
+            # reading cached file
+            json_data = cached_file.read()
+            return HttpResponse(json_data, content_type="application/json")
+    except IOError as err:
+        # error, using other cached data
+        landmarks = get_landmark_list()
+        return JsonResponse({ "results": landmarks })
 
 
 def landmark_detail(request, id):
@@ -57,8 +67,7 @@ def landmark_detail(request, id):
 def category_list(request):
     categories = Category.objects.values('id',
                                         'name',
-                                        'sort_order',
-                                        'category_id')
+                                        'sort_order')
     return JsonResponse({
         "results": list(categories)
     })
