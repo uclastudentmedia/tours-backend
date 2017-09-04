@@ -1,5 +1,6 @@
 db.sqlite3
 static/
+!www/static
 *.swp
 *.csv
 photologue/
