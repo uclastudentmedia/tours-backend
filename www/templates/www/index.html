@@ -54,18 +54,27 @@
 		  </div><!-- /.navbar-collapse -->
 		</nav>
     	<div class="container">
-            container here
             <form>
-                <select>
-                    <option>Ackerman</option>
-                    <option>Boelter</option>
-                    <option>MS</option>
+                <label for="building-select">Building</label>
+                <select id="building-select">
+                    <option></option>
                 </select>
-                <input type="text"/>
+                <label for="start-room">Start room</label>
+                <select id="start-room">
+                </select>
+                <label for="end-room">End room</label>
+                <select id="end-room">
+                </select>
+                <!--<input type="text"/>-->
             </form>
         </div>
         <script src="{% static "js/jquery.js" %}"></script>
         <script src="{% static "js/bootstrap.min.js" %}"></script>
-		<script src="{% static "js/project.js" %}"></script>
+        {% if building_list_arr %}
+        <script>
+        let building_list_arr = {{ building_list_arr | safe }};
+        </script>
+        <script src="{% static "js/project.js" %}"></script>
+        {% endif %}
     </body>
 </html>

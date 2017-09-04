@@ -5,26 +5,14 @@ from django.forms.models import model_to_dict
 from .models import Floor, Building, POI
 from api.models import Landmark
 from . import navigation, draw
+from .data import building_list_data
 
 from networkx import NetworkXNoPath, NetworkXError
 
 
-def building_list(request):
-    buildings_list = []
-    for building in Building.objects.all():
-        building_json = {}
-        landmark_id = building.landmark.id
-        floors = building.floor_set.all()
-        pois = POI.objects.filter(floor__building=building)
-
-        building_json['name'] = building.name
-        building_json['landmark_id'] = landmark_id
-        building_json['floors'] = [floor.name for floor in floors]
-        building_json['pois'] = [poi.name for poi in pois]
-
-        buildings_list.append(building_json)
-    return JsonResponse({"results": buildings_list})
-
+def building_list_view(request):
+    json_data = building_list_data()
+    return JsonResponse(json_data)
 
 def building_detail(request, landmark_id):
     try:
