@@ -16,25 +16,59 @@ $(function() {
 $('#building-select').on('change', function() {
     $('#start-room').empty();
     $('#end-room').empty();
-    let building_name = $(this).val().toLowerCase();
+    let building_name = $(this).val();
     if (!building_name) {
         console.log('no building name');
         return;
     }
-    // TODO: consider changing the array to a map instead
-    let building_object = building_list_arr.filter(building => building.name.toLowerCase() == building_name);
-    if (!building_object.length) {
+    let building_object = building_list_dict[building_name];
+    if (typeof building_object === "undefined") {
         console.log('did not find building', building_object);
         return;
     }
-    building_object = building_object[0];
+    if (typeof building_object.pois === "undefined") {
+        console.log('did not find building pois', building_object);
+        return;
+    }
     console.log(building_object);
     for (let poi of building_object.pois) {
         let option = jQuery('<option></option>', {
             text: poi
         });
-        let option2 = option;
         option.appendTo('#start-room');
         option.clone().appendTo('#end-room');
     }
+});
+
+$('#submit').on('click', function(event) {
+    event.preventDefault();
+    let building_name = $('#building-select').val();
+    if (building_name.length === 0) {
+        return;
+    }
+    let start_room = $('#start-room').val();
+    let end_room = $('#end-room').val();
+    let route_api = '/indoor/route/' +
+        building_list_dict[building_name].landmark_id + '/' +
+        start_room + '/' + end_room;
+    console.log(route_api);
+    $.ajax(route_api)
+        .done(function(data) {
+            console.log(data);
+            $('#image-container').empty();
+            let image_arr = data.images;
+            if (!(image_arr instanceof Array) ||
+                image_arr.length === 0) {
+                console.log("No images received from API");
+                return;
+            }
+            for (let image_url of image_arr) {
+                jQuery('<img/>',{
+                    src: image_url
+                }).appendTo('#image-container');
+            }
+        })
+        .fail(function(err) {
+            console.log("API error", err);
+        });
 });
