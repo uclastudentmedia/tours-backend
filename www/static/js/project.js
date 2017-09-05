@@ -1,22 +1,12 @@
-function toTitleCase(str)
-{
-    return str.replace(/\w\S*/g,
-            function(txt){
-                return txt.charAt(0).toUpperCase() +
-                txt.substr(1).toLowerCase();
-            });
-}
-
 $(function() {
-    console.log(building_list_arr);
-    if (!(building_list_arr instanceof Array) ||
-        building_list_arr.length === 0) {
+    console.log(building_list_dict);
+    if (!(building_list_dict instanceof Object) ||
+        Object.keys(building_list_dict).length === 0) {
         console.log("no building data!");
         return;
     }
     // populate list of buildings
-    for (let idx = 0; idx < building_list_arr.length; idx++) {
-        let building_name = toTitleCase(building_list_arr[idx].name);
+    for (let building_name in building_list_dict) {
         jQuery('<option></option>', {
             text: building_name
         }).appendTo('#building-select');

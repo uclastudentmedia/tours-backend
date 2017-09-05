@@ -5,8 +5,10 @@ from indoor import data
 import json
 
 def index(request):
-    context = data.building_list_data()
+    context_data = data.building_list_data()["results"]
+    context = {building["name"]: building for building in context_data}
+    #context = dict(map(lambda building: { building["name"]: building }, context_data))
     context = {
-            "building_list_arr": json.dumps(context["results"])
+            "building_list_dict": json.dumps(context)
             }
     return render(request, 'www/index.html', context)

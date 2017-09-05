@@ -65,14 +65,15 @@
                 <label for="end-room">End room</label>
                 <select id="end-room">
                 </select>
+                <button id="submit">Go</button>
                 <!--<input type="text"/>-->
             </form>
         </div>
         <script src="{% static "js/jquery.js" %}"></script>
         <script src="{% static "js/bootstrap.min.js" %}"></script>
-        {% if building_list_arr %}
+        {% if building_list_dict %}
         <script>
-        let building_list_arr = {{ building_list_arr | safe }};
+        let building_list_dict = {{ building_list_dict | safe }};
         </script>
         <script src="{% static "js/project.js" %}"></script>
         {% endif %}
