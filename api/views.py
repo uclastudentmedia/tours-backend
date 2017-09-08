@@ -22,6 +22,9 @@ def _get_landmark_detail(landmark):
 
     landmark_json['indoor_nav'] = (landmark.building is not None)
 
+    # remove relation fields
+    del landmark_json['building']
+    del landmark_json['category']
     del landmark_json['gallery']
 
     landmark_json['images'] = [{
