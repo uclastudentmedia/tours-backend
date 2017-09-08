@@ -42,11 +42,11 @@ INDOOR_BUILDINGS = [
         'floors': ['b', '2'],
         'landmark_id': 31,
     },
-    #{
-    #    'name': 'boelter',
-    #    'floors': ['4', '6'],
-    #    'landmark_id': 67,
-    #},
+    {
+        'name': 'boelter',
+        'floors': ['4'],
+        'landmark_id': 67,
+    },
 ]
 
 def load(delete=True, verbose=True, buildings=None):
