@@ -89,16 +89,16 @@ def draw_route_image(landmark_id, floor_name, path, start_name, end_name):
     line_fill = (0, 113, 188, 255)
     path = [(n[0], -n[1]) for n in path]
     for i in range(0, len(path)-1):
-        draw.line((path[i], path[i+1]), fill=line_fill, width=18)
+        draw.line((path[i], path[i+1]), fill=line_fill, width=9)
 
     # draw path
-    rad = 10
+    rad = 5
     for (x,y) in path:
         draw.ellipse([x - rad, y - rad, x + rad, y + rad], fill=line_fill)
 
     # draw text centered in room
     font = ImageFont.truetype(os.path.join(settings.MEDIA_ROOT,
-        "fonts/Roboto-Bold.ttf"), 40)
+        "fonts/Roboto-Bold.ttf"), 20)
     if start.floor == floor:
         start_centroid = start_room_data.geom.centroid
         text_width, text_height = draw.textsize(start_name, font=font)
