@@ -54,25 +54,47 @@
 		  </div><!-- /.navbar-collapse -->
 		</nav>
     	<div class="container">
-            <form>
-                <label for="building-select">Building</label>
-                <select id="building-select">
-                    <option></option>
-                </select>
-                <label for="start-room">Start room</label>
-                <select id="start-room">
-                </select>
-                <label for="end-room">End room</label>
-                <select id="end-room">
-                </select>
-                <button id="submit">Go</button>
-                <!--<input type="text"/>-->
+            <form class="form-inline">
+  		<div class="form-group">
+                    <label for="building-select">Building</label>
+                    <input id="building" type="text" class="form-control"/>
+  		</div>
+                
+		<div class="form-group">
+		    <label for="start-room">Start room</label>
+                    <input id="start" type="text" class="form-control"/>
+   		</div>
+
+  		<div class="form-group">
+                    <label for="end-room">End room</label>
+               	    <input id="end" type="text" class="form-control"/>
+                </div> 
+		<button id="getImage" class="btn btn-info" >Go</button>
             </form>
             <div id="image-container">
             </div>
         </div>
         <script src="{% static "js/jquery.js" %}"></script>
         <script src="{% static "js/bootstrap.min.js" %}"></script>
+
+        <script>
+            var building = $("#building").val();
+            var start = $("#start").val();
+            var end = $("#end").val();
+            var buildingId = 31; 
+
+            var url = "/indoor/route/" + buildingId + "/2414"  + "/2408";
+            
+            $("#getImage").on("click", function(){
+                $.getJSON(url, function(data) {
+                    console.log(data);
+                    var imageLink = data.images[0];
+                    var html = "";
+                    html += "<img src = '" + imageLink + "' " + "'>";
+                    $("#image-container").html(html);
+                });
+            });
+       </script>
         {% if building_list_dict %}
         <script>
         let building_list_dict = {{ building_list_dict | safe }};
