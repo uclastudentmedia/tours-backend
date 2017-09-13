@@ -11,11 +11,19 @@ $(function() {
             text: building_name
         }).appendTo('#building-select');
     }
+    $('#start-room').val('');
+    $('#end-room').val('');
+    $('#start-room').autocomplete({
+        source: []
+    });
+    $('#end-room').autocomplete({
+        source: []
+    });
 });
 
 $('#building-select').on('change', function() {
-    $('#start-room').empty();
-    $('#end-room').empty();
+    $('#start-room').val('');
+    $('#end-room').val('');
     let building_name = $(this).val();
     if (!building_name) {
         console.log('no building name');
@@ -31,13 +39,8 @@ $('#building-select').on('change', function() {
         return;
     }
     console.log(building_object);
-    for (let poi of building_object.pois) {
-        let option = jQuery('<option></option>', {
-            text: poi
-        });
-        option.appendTo('#start-room');
-        option.clone().appendTo('#end-room');
-    }
+    $('#start-room').autocomplete("option", "source", building_object.pois);
+    $('#end-room').autocomplete("option", "source", building_object.pois);
 });
 
 $('#submit').on('click', function(event) {

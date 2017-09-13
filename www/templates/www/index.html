@@ -54,19 +54,25 @@
 		  </div><!-- /.navbar-collapse -->
 		</nav>
     	<div class="container">
-            <form>
-                <label for="building-select">Building</label>
-                <select id="building-select">
-                    <option></option>
-                </select>
-                <label for="start-room">Start room</label>
-                <select id="start-room">
-                </select>
-                <label for="end-room">End room</label>
-                <select id="end-room">
-                </select>
+            <form id="main-form" class="form-inline">
+                <div class="form-group">
+                    <label for="building-select">Building</label>
+                    <select id="building-select">
+                        <option></option>
+                    </select>
+                </div>
+
+                <div id="start-form" class="form-group">
+                    <label for="start-room">Start room</label>
+                    <input id="start-room" type="text" list="" class="form-control"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="end-room">End room</label>
+                    <input id="end-room" type="text" list="" class="form-control"/>
+                </div>
+
                 <button id="submit">Go</button>
-                <!--<input type="text"/>-->
             </form>
             <div id="image-container">
             </div>
@@ -74,6 +80,8 @@
         <script src="{% static "js/jquery.js" %}"></script>
         <script src="{% static "js/bootstrap.min.js" %}"></script>
         {% if building_list_dict %}
+        <script src="{% static "js/jquery-ui-1.12.1.custom/jquery-ui.min.js" %}"></script>
+        <link rel="stylesheet" href="{% static "js/jquery-ui-1.12.1.custom/jquery-ui.min.css" %}"/>
         <script>
         let building_list_dict = {{ building_list_dict | safe }};
         </script>
