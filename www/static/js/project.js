@@ -7,6 +7,10 @@ $(function() {
     }
     // populate list of buildings
     for (let building_name in building_list_dict) {
+        if (typeof building_list_dict[building_name].pois === "undefined") {
+            console.log("no pois for " + building_name);
+            continue;
+        }
         jQuery('<option></option>', {
             text: building_name
         }).appendTo('#building-select');
@@ -19,38 +23,56 @@ $(function() {
     $('#end-room').autocomplete({
         source: []
     });
+    $('#main-form').on('submit', processInputsAndGetImages);
 });
 
 $('#building-select').on('change', function() {
     $('#start-room').val('');
     $('#end-room').val('');
     let building_name = $(this).val();
-    if (!building_name) {
+    if (building_name.length === 0) {
         console.log('no building name');
         return;
     }
     let building_object = building_list_dict[building_name];
-    if (typeof building_object === "undefined") {
-        console.log('did not find building', building_object);
-        return;
-    }
-    if (typeof building_object.pois === "undefined") {
-        console.log('did not find building pois', building_object);
-        return;
-    }
     console.log(building_object);
     $('#start-room').autocomplete("option", "source", building_object.pois);
     $('#end-room').autocomplete("option", "source", building_object.pois);
 });
 
-$('#submit').on('click', function(event) {
+function isRoomStringValid(roomStr) {
+    let building_name = $('#building-select').val();
+    if (building_name.length === 0) {
+        return false;
+    }
+    let building_object = building_list_dict[building_name];
+    if (building_object.pois.indexOf(roomStr) === -1) {
+        console.log("not valid room");
+        return false;
+    }
+    return true;
+}
+
+function processInputsAndGetImages(event) {
     event.preventDefault();
     let building_name = $('#building-select').val();
+    let start_room = $('#start-room').val();
+    let end_room = $('#end-room').val();
     if (building_name.length === 0) {
         return;
     }
-    let start_room = $('#start-room').val();
-    let end_room = $('#end-room').val();
+    if (start_room.length === 0) {
+        return;
+    }
+    if (!isRoomStringValid(start_room)) {
+        return;
+    }
+    if (end_room.length === 0) {
+        return;
+    }
+    if (!isRoomStringValid(end_room)) {
+        return;
+    }
     let route_api = '/indoor/route/' +
         building_list_dict[building_name].landmark_id + '/' +
         start_room + '/' + end_room;
@@ -74,4 +96,5 @@ $('#submit').on('click', function(event) {
         .fail(function(err) {
             console.log("API error", err);
         });
-});
+}
+
