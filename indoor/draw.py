@@ -89,9 +89,9 @@ def draw_route_image(landmark_id, floor_name, path, start_name, end_name):
     line_fill = (0, 113, 188, 255)
     path = [(n[0], -n[1]) for n in path]
     for i in range(0, len(path)-1):
-        draw.line((path[i], path[i+1]), fill=line_fill, width=9)
+        draw.line((path[i], path[i+1]), fill=line_fill, width=10)
 
-    # draw path
+    # draw circles at intersections
     rad = 5
     for (x,y) in path:
         draw.ellipse([x - rad, y - rad, x + rad, y + rad], fill=line_fill)
