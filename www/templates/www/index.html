@@ -29,7 +29,7 @@
 		  </div>
 		
 		  <!-- Collect the nav links, forms, and other content for toggling -->
-		  <div class="collapse navbar-collapse navbar-ex1-collapse">
+		  <!--<div class="collapse navbar-collapse navbar-ex1-collapse">
 		    <ul class="nav navbar-nav">
 			    <li class="home"><a href="/">Home</a></li>
 			    <li class="galleries dropdown">
@@ -51,7 +51,7 @@
 					</ul>
 				</li>
 		    </ul>
-		  </div><!-- /.navbar-collapse -->
+          </div>--><!-- /.navbar-collapse -->
 		</nav>
     	<div class="container">
             <form id="main-form" class="form-inline">
@@ -74,6 +74,7 @@
 
                 <button id="submit">Go</button>
             </form>
+            <br/>
             <div id="image-container">
             </div>
         </div>
@@ -86,6 +87,11 @@
         let building_list_dict = {{ building_list_dict | safe }};
         </script>
         <script src="{% static "js/project.js" %}"></script>
+        <style>
+        #image-container img {
+            width: 80%;
+        }
+        </style>
         {% endif %}
     </body>
 </html>
