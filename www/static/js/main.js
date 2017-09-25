@@ -5,16 +5,23 @@ $(function() {
         console.log("no building data!");
         return;
     }
+    /*
     // populate list of buildings
     for (let building_name in building_list_dict) {
-        if (typeof building_list_dict[building_name].pois === "undefined") {
+        let building = building_list_dict[building_name];
+        if (typeof building.pois === "undefined") {
             console.log("no pois for " + building_name);
             continue;
         }
         jQuery('<option></option>', {
             text: building_name
         }).appendTo('#building-select');
+
+        jQuery('<li></li>',{
+            text: building_name + ': ' + building.floors.join(', ')
+        }).appendTo('#building-list');
     }
+    */
     $('#start-room').val('');
     $('#end-room').val('');
     $('#start-room').autocomplete({

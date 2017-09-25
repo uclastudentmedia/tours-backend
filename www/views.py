@@ -6,9 +6,9 @@ import json
 
 def index(request):
     context_data = data.building_list_data()["results"]
-    context = {building["name"]: building for building in context_data}
-    #context = dict(map(lambda building: { building["name"]: building }, context_data))
+    building_list_dict = {building["name"]: building for building in context_data}
     context = {
-            "building_list_dict": json.dumps(context)
+            "building_list_dict": building_list_dict,
+            "building_list_json": json.dumps(building_list_dict)
             }
     return render(request, 'www/index.html', context)

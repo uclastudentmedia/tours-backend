@@ -19,12 +19,12 @@
 		<nav class="navbar navbar-default" role="navigation">
 		  <!-- Brand and toggle get grouped for better mobile display -->
 		  <div class="navbar-header">
-		    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+		    <!--<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
 		      <span class="sr-only">Toggle navigation</span>
 		      <span class="icon-bar"></span>
 		      <span class="icon-bar"></span>
 		      <span class="icon-bar"></span>
-		    </button>
+		    </button>-->
 		    <a class="navbar-brand" href="/">UCLA Indoor Navigation</a>
 		  </div>
 		
@@ -56,8 +56,11 @@
     	<div class="container">
             <p>Need to find your way through UCLA's buildings? Use the below form to help you out!
             <br/>Current supported buildings and floors are:
-            <br/>Boelter 4, 5
-            <br/>Ackerman 2, B
+            <ul id="building-list">
+                {% for building_name, building in building_list_dict.iteritems %}
+                <li>{{building_name}}: {{ building.floors | join:', ' }}</li>
+                {% endfor %}
+            </ul>
             <br/><br/>Also look for our Android and iOS apps coming out soon!
             </p>
             <br/>
@@ -65,6 +68,9 @@
                 <div class="form-group">
                     <label for="building-select">Building</label>
                     <select id="building-select">
+                        {% for building_name in building_list_dict %}
+                        <option>{{building_name}}</option>
+                        {% endfor %}
                     </select>
                 </div>
 
@@ -93,7 +99,7 @@
         <script src="{% static "js/jquery-ui-1.12.1.custom/jquery-ui.min.js" %}"></script>
         <link rel="stylesheet" href="{% static "js/jquery-ui-1.12.1.custom/jquery-ui.min.css" %}"/>
         <script>
-        let building_list_dict = {{ building_list_dict | safe }};
+        let building_list_dict = {{ building_list_json | safe }};
         </script>
         <script src="{% static "js/main.js" %}"></script>
         <style>
