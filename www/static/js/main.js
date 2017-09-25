@@ -98,13 +98,17 @@ function processInputsAndGetImages(event) {
                 console.log("No images received from API");
                 return;
             }
-            for (let image_url of image_arr) {
+            for (let image of image_arr) {
+                let container = $('<div></div>').appendTo('#image-container');
+                jQuery('<h3></h3>', {
+                    text: data.building + ', Floor ' + image.floor
+                }).appendTo(container);
                 let a_tag = jQuery('<a></a>', {
-                    href: image_url,
+                    href: image.url,
                     target: '_blank'
-                }).appendTo('#image-container');
+                }).appendTo(container);
                 jQuery('<img/>',{
-                    src: image_url
+                    src: image.url
                 }).appendTo(a_tag);
             }
         })
