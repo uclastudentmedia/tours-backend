@@ -42,10 +42,10 @@ $(function() {
 });
 
 function populateRoomInputs() {
-    $('#start-room').val('')
+    $('#start-room').val('');
     $('#end-room').val('');
     $('#start-form').removeClass('has-error has-success');
-    $('#end-form').removeClass('has-error has-success');;
+    $('#end-form').removeClass('has-error has-success');
     let building_name = $('#building-select').val();
     if (building_name.length === 0) {
         console.log('no building name');
