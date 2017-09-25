@@ -36,11 +36,16 @@ $(function() {
     populateRoomInputs();
     $('#building-select').on('change', populateRoomInputs);
     hideError();
+
+    $('#start-form').on('input', validateRoomInput);
+    $('#end-form').on('input', validateRoomInput);
 });
 
 function populateRoomInputs() {
-    $('#start-room').val('');
+    $('#start-room').val('')
     $('#end-room').val('');
+    $('#start-form').removeClass('has-error has-success');
+    $('#end-form').removeClass('has-error has-success');;
     let building_name = $('#building-select').val();
     if (building_name.length === 0) {
         console.log('no building name');
@@ -52,6 +57,17 @@ function populateRoomInputs() {
     $('#end-room').autocomplete("option", "source", building_object.pois);
 }
 
+function validateRoomInput() {
+    let room = $(this).children('input').val();
+    $(this).removeClass('has-error has-success');
+    if (room.length == 0) {
+        return;
+    }
+    if (!isRoomStringValid(room)) {
+        $(this).addClass('has-error');
+    }
+    $(this).addClass('has-success');
+}
 
 function isBuildingStringValid(buildingStr) {
     return building_list_dict.hasOwnProperty(buildingStr);
@@ -59,7 +75,7 @@ function isBuildingStringValid(buildingStr) {
 
 function isRoomStringValid(roomStr) {
     let building_name = $('#building-select').val();
-    if (building_name.length === 0) {
+    if (!isBuildingStringValid(building_name)) {
         return false;
     }
     let building_object = building_list_dict[building_name];
@@ -77,10 +93,6 @@ function processInputsAndGetImages(event) {
     let end_room = $('#end-room').val();
     if (!isBuildingStringValid(building_name)) {
         showError('Invalid building name');
-        return;
-    }
-    if (building_name.length === 0) {
-        showError('No start room selected');
         return;
     }
     if (start_room.length === 0) {
