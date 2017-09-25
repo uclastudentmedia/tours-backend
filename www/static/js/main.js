@@ -23,13 +23,27 @@ $(function() {
         }).appendTo('#building-list');
     }
     */
+    $('#start-form').on('input', validateRoomInput);
+    //$('#start-form').on('change', validateRoomInput);
+    //$('#start-form').on('focusout', validateRoomInput);
+    $('#end-form').on('input', validateRoomInput);
+    //$('#end-form').on('change', validateRoomInput);
+    //$('#end-form').on('focusout', validateRoomInput);
     $('#start-room').val('');
     $('#end-room').val('');
     $('#start-room').autocomplete({
-        source: []
+        source: [],
+        select: function() {
+            $('#start-form').removeClass('has-error');
+            $('#start-form').addClass('has-success');
+        }
     });
     $('#end-room').autocomplete({
-        source: []
+        source: [],
+        select: function() {
+            $('#end-form').removeClass('has-error');
+            $('#end-form').addClass('has-success');
+        }
     });
     $('#main-form').on('submit', processInputsAndGetImages);
     // the building select should now have the first building, so we can populate the rooms right away
@@ -37,8 +51,6 @@ $(function() {
     $('#building-select').on('change', populateRoomInputs);
     hideError();
 
-    $('#start-form').on('input', validateRoomInput);
-    $('#end-form').on('input', validateRoomInput);
 });
 
 function populateRoomInputs() {
@@ -60,13 +72,14 @@ function populateRoomInputs() {
 function validateRoomInput() {
     let room = $(this).children('input').val();
     $(this).removeClass('has-error has-success');
-    if (room.length == 0) {
+    if (room.length === 0) {
         return;
     }
     if (!isRoomStringValid(room)) {
         $(this).addClass('has-error');
     }
     $(this).addClass('has-success');
+    $('#loading-msg').addClass('hidden');
 }
 
 function isBuildingStringValid(buildingStr) {
@@ -115,6 +128,7 @@ function processInputsAndGetImages(event) {
         building_list_dict[building_name].landmark_id + '/' +
         start_room + '/' + end_room;
     console.log(route_api);
+    $('#loading-msg').removeClass('hidden alert-success').addClass('alert-info').text('Loading...');
     $.ajax(route_api)
         .done(function(data) {
             console.log(data);
@@ -124,6 +138,7 @@ function processInputsAndGetImages(event) {
             if (!(image_arr instanceof Array) ||
                 image_arr.length === 0) {
                 console.log("No images received from API");
+                $('#loading-msg').addClass('hidden');
                 showError("No images");
                 return;
             }
@@ -140,9 +155,11 @@ function processInputsAndGetImages(event) {
                     src: image.url
                 }).appendTo(a_tag);
             }
+            $('#loading-msg').removeClass('alert-info').addClass('alert-success').text('Done.');
         })
         .fail(function(err) {
             console.log("API error", err);
+            $('#loading-msg').addClass('hidden');
             showError(err.statusText);
         });
 }

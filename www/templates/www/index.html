@@ -54,15 +54,15 @@
           </div>--><!-- /.navbar-collapse -->
 		</nav>
     	<div class="container">
-            <p>Need to find your way through UCLA's buildings? Use the below form to help you out!
+            <div>Need to find your way through UCLA's buildings? Use the below form to help you out!
             <br/>Current supported buildings and floors are:
             <ul id="building-list">
                 {% for building_name, building in building_list_dict.iteritems %}
                 <li>{{building_name}}: {{ building.floors | join:', ' }}</li>
                 {% endfor %}
             </ul>
-            <br/><br/>Also look for our Android and iOS apps coming out soon!
-            </p>
+            <br/>Also look for our Android and iOS apps coming out soon!
+            </div>
             <br/>
             <form id="main-form" class="form-inline">
                 <div class="form-group">
@@ -89,7 +89,9 @@
             <br/>
             <div id="error-msg" class="alert alert-danger hidden">
             </div>
-            <br/>
+            <div id="loading-msg" class="alert hidden">
+            </div>
+            <hr/>
             <div id="image-container">
             </div>
         </div>
