@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>{% block title %}{% endblock %}</title>
+        <title>UCLA Indoor Navigation</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<!-- Bootstrap -->
 		{% load static %}
@@ -54,11 +54,17 @@
           </div>--><!-- /.navbar-collapse -->
 		</nav>
     	<div class="container">
+            <p>Need to find your way through UCLA's buildings? Use the below form to help you out!
+            <br/>Current supported buildings and floors are:
+            <br/>Boelter 4, 5
+            <br/>Ackerman 2, B
+            <br/><br/>Also look for our Android and iOS apps coming out soon!
+            </p>
+            <br/>
             <form id="main-form" class="form-inline">
                 <div class="form-group">
                     <label for="building-select">Building</label>
                     <select id="building-select">
-                        <option></option>
                     </select>
                 </div>
 
@@ -75,6 +81,9 @@
                 <button id="submit">Go</button>
             </form>
             <br/>
+            <div id="error-msg">
+            </div>
+            <br/>
             <div id="image-container">
             </div>
         </div>
@@ -88,6 +97,9 @@
         </script>
         <script src="{% static "js/main.js" %}"></script>
         <style>
+        .container {
+            font-size: 18px;
+        }
         #image-container img {
             width: 80%;
         }

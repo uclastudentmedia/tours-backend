@@ -24,12 +24,15 @@ $(function() {
         source: []
     });
     $('#main-form').on('submit', processInputsAndGetImages);
+    // the building select should now have the first building, so we can populate the rooms right away
+    populateRoomInputs();
+    $('#building-select').on('change', populateRoomInputs);
 });
 
-$('#building-select').on('change', function() {
+function populateRoomInputs() {
     $('#start-room').val('');
     $('#end-room').val('');
-    let building_name = $(this).val();
+    let building_name = $('#building-select').val();
     if (building_name.length === 0) {
         console.log('no building name');
         return;
@@ -38,7 +41,8 @@ $('#building-select').on('change', function() {
     console.log(building_object);
     $('#start-room').autocomplete("option", "source", building_object.pois);
     $('#end-room').autocomplete("option", "source", building_object.pois);
-});
+}
+
 
 function isRoomStringValid(roomStr) {
     let building_name = $('#building-select').val();
@@ -71,6 +75,9 @@ function processInputsAndGetImages(event) {
         return;
     }
     if (!isRoomStringValid(end_room)) {
+        return;
+    }
+    if (start_room === end_room) {
         return;
     }
     let route_api = '/indoor/route/' +
