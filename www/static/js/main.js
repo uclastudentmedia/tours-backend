@@ -3,6 +3,7 @@ $(function() {
     if (!(building_list_dict instanceof Object) ||
         Object.keys(building_list_dict).length === 0) {
         console.log("no building data!");
+        showError("No building data!");
         return;
     }
     /*
@@ -34,6 +35,7 @@ $(function() {
     // the building select should now have the first building, so we can populate the rooms right away
     populateRoomInputs();
     $('#building-select').on('change', populateRoomInputs);
+    hideError();
 });
 
 function populateRoomInputs() {
@@ -50,6 +52,10 @@ function populateRoomInputs() {
     $('#end-room').autocomplete("option", "source", building_object.pois);
 }
 
+
+function isBuildingStringValid(buildingStr) {
+    return building_list_dict.hasOwnProperty(buildingStr);
+}
 
 function isRoomStringValid(roomStr) {
     let building_name = $('#building-select').val();
@@ -69,19 +75,28 @@ function processInputsAndGetImages(event) {
     let building_name = $('#building-select').val();
     let start_room = $('#start-room').val();
     let end_room = $('#end-room').val();
+    if (!isBuildingStringValid(building_name)) {
+        showError('Invalid building name');
+        return;
+    }
     if (building_name.length === 0) {
+        showError('No start room selected');
         return;
     }
     if (start_room.length === 0) {
+        showError('No start room selected');
         return;
     }
     if (!isRoomStringValid(start_room)) {
+        showError('Invalid start room');
         return;
     }
     if (end_room.length === 0) {
+        showError('No end room selected');
         return;
     }
     if (!isRoomStringValid(end_room)) {
+        showError('Invalid end room');
         return;
     }
     let route_api = '/indoor/route/' +
@@ -91,11 +106,13 @@ function processInputsAndGetImages(event) {
     $.ajax(route_api)
         .done(function(data) {
             console.log(data);
+            hideError();
             $('#image-container').empty();
             let image_arr = data.images;
             if (!(image_arr instanceof Array) ||
                 image_arr.length === 0) {
                 console.log("No images received from API");
+                showError("No images");
                 return;
             }
             for (let image of image_arr) {
@@ -114,6 +131,14 @@ function processInputsAndGetImages(event) {
         })
         .fail(function(err) {
             console.log("API error", err);
+            showError(err.statusText);
         });
 }
 
+function showError(error_msg) {
+    $('#error-msg').removeClass('hidden').text(error_msg);
+}
+
+function hideError() {
+    $('#error-msg').addClass('hidden').text('');
+}
