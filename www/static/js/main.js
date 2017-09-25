@@ -99,9 +99,13 @@ function processInputsAndGetImages(event) {
                 return;
             }
             for (let image_url of image_arr) {
+                let a_tag = jQuery('<a></a>', {
+                    href: image_url,
+                    target: '_blank'
+                }).appendTo('#image-container');
                 jQuery('<img/>',{
                     src: image_url
-                }).appendTo('#image-container');
+                }).appendTo(a_tag);
             }
         })
         .fail(function(err) {
