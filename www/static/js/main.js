@@ -84,9 +84,6 @@ function processInputsAndGetImages(event) {
     if (!isRoomStringValid(end_room)) {
         return;
     }
-    if (start_room === end_room) {
-        return;
-    }
     let route_api = '/indoor/route/' +
         building_list_dict[building_name].landmark_id + '/' +
         start_room + '/' + end_room;
