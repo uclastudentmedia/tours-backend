@@ -1,10 +1,6 @@
 from django.test import TestCase, Client
-from django.forms.models import model_to_dict
-from django.conf import settings
-
 import unittest
-import os
-import json
+from django.forms.models import model_to_dict
 
 from api.models import Landmark, Category
 
@@ -16,13 +12,9 @@ class ApiLandmarkListTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         # create some test Landmarks
-        cached_filename = os.path.join(settings.MEDIA_ROOT,
-                                       'landmark/cache/landmark.json')
-        with open(cached_filename) as cached_file:
-            js = json.load(cached_file)['results']
-        landmarks = [Landmark(id=l['id'], name=l['name']) for l in js]
-        cls.landmarks = Landmark.objects.bulk_create(landmarks)
-
+        cls.landmarks = []
+        for id in range(1, 4):
+            cls.landmarks.append(Landmark.objects.create(id=id, name=str(id)))
 
     def setUp(self):
         self.client = Client()
