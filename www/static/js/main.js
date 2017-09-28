@@ -33,9 +33,17 @@ $(function() {
     $('#end-room').val('');
     $('#start-room').autocomplete({
         source: [],
-        select: function() {
+        select: function(event, ui) {
             $('#start-form').removeClass('has-error');
             $('#start-form').addClass('has-success');
+            if ($('input[name=navigation-type]:checked').val() === 'find-a-room') {
+                $('#end-room').val(ui.item.value);
+            }
+        }
+    });
+    $('#start-room').on('input', function() {
+        if ($('input[name=navigation-type]:checked').val() === 'find-a-room') {
+            $('#end-room').val($('#start-room').val());
         }
     });
     $('#end-room').autocomplete({
@@ -51,6 +59,17 @@ $(function() {
     $('#building-select').on('change', populateRoomInputs);
     hideError();
 
+    $('input[name=navigation-type]').change(function() {
+        let endFormDisplayStyle = 'inline-block';
+        if (this.value === "find-a-room") {
+            endFormDisplayStyle = 'none';
+            $('#end-room').val($('#start-room').val());
+        }
+        $('#end-form').css('display', endFormDisplayStyle);
+    });
+
+    // need this because Firefox saves the last checked value
+    $('#room-to-room').prop('checked', true);
 });
 
 function populateRoomInputs() {

@@ -88,6 +88,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
             <br/>
             <form id="main-form" class="form-inline">
+
                 <div class="form-group">
                     <label for="building-select">Building</label>
                     <select id="building-select">
@@ -108,6 +109,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
 
                 <button id="submit">Go</button>
+                <br/>
+
+                <div class="form-group">
+                    <input type="radio" id="room-to-room" name="navigation-type" value="room-to-room" checked>
+                    <label for="room-to-room">Room to room</label>
+                    <br/>
+                    <input type="radio" id="find-a-room" name="navigation-type" value="find-a-room">
+                    <label for="find-a-room">Find a room</label>
+                </div>
             </form>
             <br/>
             <div id="error-msg" class="alert alert-danger hidden">
