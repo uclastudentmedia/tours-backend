@@ -44,8 +44,13 @@ INDOOR_BUILDINGS = [
     },
     {
         'name': 'boelter',
-        'floors': ['4', '5'],
+        'floors': ['4', '5', '6'],
         'landmark_id': 67,
+    },
+    {
+        'name': 'ms',
+        'floors': ['5'],
+        'landmark_id': 417,
     },
 ]
 
