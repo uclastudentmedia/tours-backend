@@ -2,13 +2,14 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
 from indoor import data
-from indoor.models import POI
+from indoor.models import Building, POI
 import json
 
 def index(request):
     context_data = data.building_list_data()["results"]
     for building in context_data:
-        building["pois"] = [poi for poi in building["pois"] if POI.objects.get(name=poi).type == "room"]
+        building_obj = Building.objects.get(landmark__id=building["landmark_id"])
+        building["pois"] = [poi for poi in building["pois"] if POI.objects.get(name=poi, floor__building=building_obj).type == "room"]
     building_list_dict = {building["name"]: building for building in context_data}
     context = {
             "building_list_dict": building_list_dict,
