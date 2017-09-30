@@ -19,6 +19,10 @@ def _get_landmark_detail(landmark):
     landmark_json['attributes'] = landmark.attributes
 
     landmark_json['indoor_nav'] = (landmark.building is not None)
+    
+    # if landmark's indoor_nav is False, remove indoor_nav field
+    if(landmark_json['indoor_nav'] == False):
+        del landmark_json['indoor_nav']
 
     # remove relation fields
     del landmark_json['building']
