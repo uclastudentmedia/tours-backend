@@ -116,7 +116,7 @@ elif DATABASE_IN_USE == 'psql':
         'default': {
             'ENGINE': 'django.contrib.gis.db.backends.postgis',
             'NAME': 'tours_dev',
-            'USER': 'jong',
+            'USER': 'tours_dev',
             'PASSWORD': 'bruin111',
             'HOST': 'localhost',
             'PORT': '',
