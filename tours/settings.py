@@ -104,8 +104,8 @@ elif DATABASE_IN_USE == 'mysql':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'tours',
-            'USER': 'toursuser',
+            'NAME': 'tours_dev',
+            'USER': 'tours_dev',
             'PASSWORD': 'bruin111',
             'HOST': 'localhost',
             'PORT': '',
@@ -115,7 +115,7 @@ elif DATABASE_IN_USE == 'psql':
     DATABASES = {
         'default': {
             'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': 'tours_jong',
+            'NAME': 'tours_dev',
             'USER': 'jong',
             'PASSWORD': 'bruin111',
             'HOST': 'localhost',
