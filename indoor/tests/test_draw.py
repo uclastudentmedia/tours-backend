@@ -26,10 +26,12 @@ class NavigationTest(TestCase):
 
         self.start = POI.objects.create(name='test start',
                                         floor=self.floor,
+                                        type='room',
                                         geom=Point(1,1))
 
         self.end = POI.objects.create(name='test end',
                                       floor=self.floor,
+                                      type='room',
                                       geom=Point(4,4))
 
         self.start_room = RoomPolygon.objects.create(name=self.start.name,
