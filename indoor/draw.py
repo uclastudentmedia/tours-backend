@@ -72,13 +72,13 @@ def draw_route_image(landmark_id, floor_name, path, start_name, end_name):
     draw = ImageDraw.Draw(image)
 
     # fill in rooms
-    if start.floor == floor:
+    if start.floor == floor and start.type == "room":
         start_room_data = RoomPolygon.objects.get(name=start_name, floor=floor)
         start_border = start_room_data.geom.coords
         # room only has one polygon since we're using PolygonField
         start_border = [(n[0], -n[1]) for n in start_border[0]]
         draw.polygon(start_border, fill=(255, 114, 114, 255))
-    if end.floor == floor:
+    if end.floor == floor and end.type == "room":
         end_room_data = RoomPolygon.objects.get(name=end_name, floor=floor)
         end_border = end_room_data.geom.coords
         # room only has one polygon since we're using PolygonField
@@ -99,13 +99,13 @@ def draw_route_image(landmark_id, floor_name, path, start_name, end_name):
     # draw text centered in room
     font = ImageFont.truetype(os.path.join(settings.MEDIA_ROOT,
         "fonts/Roboto-Bold.ttf"), 20)
-    if start.floor == floor:
+    if start.floor == floor and start.type == "room":
         start_centroid = start_room_data.geom.centroid
         text_width, text_height = draw.textsize(start_name, font=font)
         start_coords = (start_centroid.x - text_width / 2,
                 -start_centroid.y - text_height / 2)
         draw.text(start_coords, start_name, font=font, fill=(0, 188, 169, 255))
-    if end.floor == floor:
+    if end.floor == floor and start.type == "room":
         end_centroid = end_room_data.geom.centroid
         text_width, text_height = draw.textsize(end_name, font=font)
         end_coords = (end_centroid.x - text_width / 2,
