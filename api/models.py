@@ -42,6 +42,10 @@ class Tour(models.Model):
     landmarks=SortedManyToManyField(Landmark, verbose_name="list of landmarks")
     distance=models.FloatField()
     duration=models.IntegerField()
+    polyline=models.CharField(max_length=200, blank=True)
+    text_description=models.TextField(null=True, blank=True, default="")
+    icon=models.CharField(max_length=100, blank=True)
+    image=models.ImageField(upload_to="tour/")
 
     def __str__(self):
         return self.name
