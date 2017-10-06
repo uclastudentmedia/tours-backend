@@ -139,6 +139,12 @@ def format_route_output(building_graph, path):
     separated_paths = []
     separated_paths.append([path[0]])
 
+    # same room case
+    if len(path) == 1:
+        point = (path[0][0], path[0][1])
+        floor = path[0][2]
+        return ([[point]], [floor])
+
     for i in range(len(path) - 1):
         pt1 = path[i]
         pt2 = path[i+1]

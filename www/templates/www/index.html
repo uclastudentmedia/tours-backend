@@ -1,11 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <!-- Global Site Tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-39834942-11"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments)};
+            gtag('js', new Date());
+
+            gtag('config', 'UA-39834942-11');
+        </script>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-TKJSG35');</script>
+<!-- End Google Tag Manager -->
+
         <meta charset="utf-8">
-        <title>{% block title %}{% endblock %}</title>
+        <title>UCLA Indoor Navigation</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Find out how to navigate your way through UCLA's buildings.">
 		<!-- Bootstrap -->
 		{% load static %}
+        <link rel="icon" type="image/x-icon" href="/media/favicon.ico">
 		<link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet" media="screen">
 		<link href="{% static "css/screen.css" %}" rel="stylesheet" media="screen">
 	    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -15,21 +34,25 @@
 	    <![endif]-->
     </head>
     <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TKJSG35"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
         <!-- Navigation -->
 		<nav class="navbar navbar-default" role="navigation">
 		  <!-- Brand and toggle get grouped for better mobile display -->
 		  <div class="navbar-header">
-		    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+		    <!--<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
 		      <span class="sr-only">Toggle navigation</span>
 		      <span class="icon-bar"></span>
 		      <span class="icon-bar"></span>
 		      <span class="icon-bar"></span>
-		    </button>
+		    </button>-->
 		    <a class="navbar-brand" href="/">UCLA Indoor Navigation</a>
 		  </div>
 		
 		  <!-- Collect the nav links, forms, and other content for toggling -->
-		  <div class="collapse navbar-collapse navbar-ex1-collapse">
+		  <!--<div class="collapse navbar-collapse navbar-ex1-collapse">
 		    <ul class="nav navbar-nav">
 			    <li class="home"><a href="/">Home</a></li>
 			    <li class="galleries dropdown">
@@ -51,28 +74,62 @@
 					</ul>
 				</li>
 		    </ul>
-		  </div><!-- /.navbar-collapse -->
+          </div>--><!-- /.navbar-collapse -->
 		</nav>
     	<div class="container">
-            <form class="form-inline">
-  		<div class="form-group">
-                    <label for="building-select">Building</label>
-                    <input id="building" type="text" class="form-control"/>
-  		</div>
-                
-		<div class="form-group">
-		    <label for="start-room">Start room</label>
-                    <input id="start" type="text" class="form-control"/>
-   		</div>
+            <div>Need to find your way through UCLA's buildings? Use the below form to help you out!
+            <br/>Current supported buildings and floors are:
+            <ul id="building-list">
+                {% for building_name, building in building_list_dict.iteritems %}
+                <li>{{building_name}}: {{ building.floors | join:', ' }}</li>
+                {% endfor %}
+            </ul>
+            <br/>Also look for our Android and iOS apps coming out soon!
+            </div>
+            <br/>
+            <form id="main-form" class="form-inline">
 
-  		<div class="form-group">
+                <div class="form-group">
+                    <label for="building-select">Building</label>
+                    <select id="building-select">
+                        {% for building_name in building_list_dict %}
+                        <option>{{building_name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div id="start-form" class="form-group">
+                    <label for="start-room">Start room</label>
+                    <input id="start-room" type="text" list="" class="form-control"/>
+                </div>
+
+                <div id="end-form" class="form-group">
                     <label for="end-room">End room</label>
-               	    <input id="end" type="text" class="form-control"/>
-                </div> 
-		<button id="getImage" class="btn btn-info" >Go</button>
+                    <input id="end-room" type="text" list="" class="form-control"/>
+                </div>
+
+                <button id="submit">Go</button>
+                <br/>
+
+                <div class="form-group">
+                    <input type="radio" id="room-to-room" name="navigation-type" value="room-to-room" checked>
+                    <label for="room-to-room">Room to room</label>
+                    <br/>
+                    <input type="radio" id="find-a-room" name="navigation-type" value="find-a-room">
+                    <label for="find-a-room">Find a room</label>
+                </div>
             </form>
+            <br/>
+            <div id="error-msg" class="alert alert-danger hidden">
+            </div>
+            <div id="loading-msg" class="alert hidden">
+            </div>
+            <hr/>
             <div id="image-container">
             </div>
+            <br/>
+            <div>A project by <a href="http://apply.uclastudentmedia.com">UCLA Student Media</a></div>
+            <br/>
         </div>
         <script src="{% static "js/jquery.js" %}"></script>
         <script src="{% static "js/bootstrap.min.js" %}"></script>
@@ -96,10 +153,20 @@
             });
        </script>
         {% if building_list_dict %}
+        <script src="{% static "js/jquery-ui-1.12.1.custom/jquery-ui.min.js" %}"></script>
+        <link rel="stylesheet" href="{% static "js/jquery-ui-1.12.1.custom/jquery-ui.min.css" %}"/>
         <script>
-        let building_list_dict = {{ building_list_dict | safe }};
+        let building_list_dict = {{ building_list_json | safe }};
         </script>
-        <script src="{% static "js/project.js" %}"></script>
+        <script src="{% static "js/main.js" %}"></script>
+        <style>
+        .container {
+            font-size: 18px;
+        }
+        #image-container img {
+            width: 80%;
+        }
+        </style>
         {% endif %}
     </body>
 </html>

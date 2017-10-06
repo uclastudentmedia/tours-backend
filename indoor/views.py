@@ -43,19 +43,22 @@ def route(request, landmark_id, start_name, end_name):
     except (POI.DoesNotExist, NetworkXNoPath, NetworkXError) as e:
         raise Http404(e)
 
-    image_urls = []
+    images = []
     for path, floor in zip(paths, floors):
         if not path:
             raise Exception("path is empty")
         draw.draw_route_image(landmark_id, floor, path, start_name, end_name)
         image_url = draw.get_route_image_url(landmark_id, floor,
                                              path[0], path[-1])
-        image_urls.append(image_url)
+        images.append({
+            'url': image_url,
+            'floor': floor
+        })
 
     return JsonResponse({
-        'building': building.name,
+        'building': building.landmark.name,
         'landmark_id': landmark_id,
         'start': start_name,
         'end': end_name,
-        'images': image_urls
+        'images': images
     })

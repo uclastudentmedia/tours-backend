@@ -1,8 +1,6 @@
 from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse, Http404
+from django.http import JsonResponse, Http404
 from django.forms.models import model_to_dict
-from django.conf import settings
-import os.path
 
 from .models import Landmark, Category, Tour
 
@@ -21,7 +19,14 @@ def _get_landmark_detail(landmark):
     landmark_json['attributes'] = landmark.attributes
 
     landmark_json['indoor_nav'] = (landmark.building is not None)
+    
+    # if landmark's indoor_nav is False, remove indoor_nav field
+    if(landmark_json['indoor_nav'] == False):
+        del landmark_json['indoor_nav']
 
+    # remove relation fields
+    del landmark_json['building']
+    del landmark_json['category']
     del landmark_json['gallery']
 
     landmark_json['images'] = [{
@@ -47,16 +52,8 @@ def get_landmark_detail(id):
 
 
 def landmark_list(request):
-    cached_filename = os.path.join(settings.MEDIA_ROOT, 'landmark/cache/landmark.json')
-    try:
-        with open(cached_filename) as cached_file:
-            # reading cached file
-            json_data = cached_file.read()
-            return HttpResponse(json_data, content_type="application/json")
-    except IOError as err:
-        # error, using other cached data
-        landmarks = get_landmark_list()
-        return JsonResponse({ "results": landmarks })
+    landmarks = get_landmark_list()
+    return JsonResponse({ "results": landmarks })
 
 
 def landmark_detail(request, id):
