@@ -17,8 +17,7 @@ for tour in tours:
     query["directions_options"]["units"] = "miles"
     
     #construct url
-    api_key ="mapzen-kRYtVFg"
-    url = "https://matrix.mapzen.com/optimized_route?json="+json.dumps(query) + "&api_key=" + "mapzen-kRYtVFg"
+    url = "https://tours.bruinmobile.com/optimized_route?json="+json.dumps(query)
     print url
     response = urllib.urlopen(url)
     data = json.loads(response.read())
