@@ -133,6 +133,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         <script src="{% static "js/jquery.js" %}"></script>
         <script src="{% static "js/bootstrap.min.js" %}"></script>
+
+        <script>
+            var building = $("#building").val();
+            var start = $("#start").val();
+            var end = $("#end").val();
+            var buildingId = 31; 
+
+            var url = "/indoor/route/" + buildingId + "/2414"  + "/2408";
+            
+            $("#getImage").on("click", function(){
+                $.getJSON(url, function(data) {
+                    console.log(data);
+                    var imageLink = data.images[0];
+                    var html = "";
+                    html += "<img src = '" + imageLink + "' " + "'>";
+                    $("#image-container").html(html);
+                });
+            });
+       </script>
         {% if building_list_dict %}
         <script src="{% static "js/jquery-ui-1.12.1.custom/jquery-ui.min.js" %}"></script>
         <link rel="stylesheet" href="{% static "js/jquery-ui-1.12.1.custom/jquery-ui.min.css" %}"/>
