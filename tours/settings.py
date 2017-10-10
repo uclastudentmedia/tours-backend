@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '_e1u$fy%z2^4#27x!_-p#-jt2)p6r&r^#)=ye^&9e3++q7=aw!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -104,8 +104,8 @@ elif DATABASE_IN_USE == 'mysql':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'tours_jong',
-            'USER': 'jong',
+            'NAME': 'tours_dev',
+            'USER': 'tours_dev',
             'PASSWORD': 'bruin111',
             'HOST': 'localhost',
             'PORT': '',
@@ -115,8 +115,8 @@ elif DATABASE_IN_USE == 'psql':
     DATABASES = {
         'default': {
             'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': 'tours_jong',
-            'USER': 'jong',
+            'NAME': 'tours',
+            'USER': 'tours_admin',
             'PASSWORD': 'bruin111',
             'HOST': 'localhost',
             'PORT': '',
