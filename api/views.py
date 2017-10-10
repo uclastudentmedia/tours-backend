@@ -73,10 +73,15 @@ def tour_list(request):
     tours=list(Tour.objects.all())
     tours_list=[]
     for tour in tours:
+	obj = tour
         tour= model_to_dict(tour)
         tour['landmark_ids'] = list(tour['landmarks'].values('id'))
         tour['landmark_ids'] = [l["id"] for l in tour['landmark_ids']]
-        del tour['landmarks']
+        if(tour['image']):
+	    tour['image'] = obj.image.url
+	else:
+ 	    tour['image'] = None
+	del tour['landmarks']
         tours_list.append(tour)
     return JsonResponse({"results": tours_list})
 
