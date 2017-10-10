@@ -45,7 +45,7 @@ class Tour(models.Model):
     polyline=models.TextField(null=True, blank=True, default="")
     text_description=models.TextField(null=True, blank=True, default="")
     icon=models.CharField(max_length=100, blank=True)
-    image=models.ImageField(upload_to="tour/")
+    image=models.ImageField(upload_to="tour/", null=True)
 
     def __str__(self):
         return self.name
