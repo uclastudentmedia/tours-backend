@@ -85,6 +85,5 @@ service apache2 reload
 	SSLCertificateChainFile /etc/letsencrypt/live/tours.bruinmobile.com/chain.pem
 </VirtualHost>
 
-# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
 </IfModule>
 ```
