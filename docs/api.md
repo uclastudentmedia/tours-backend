@@ -138,6 +138,8 @@ Response:
 
 ## Outdoor Navigation
 
+#### [Server Setup](outdoor.md)
+
 ### Turn by Turn
 Turn-by-turn directions between 2 points. See [Mapzen turn by turn docs](https://mapzen.com/documentation/mobility/turn-by-turn/api-reference).
 
