@@ -11,7 +11,7 @@ def building_list_data():
         building_json['name'] = building.landmark.name
         building_json['landmark_id'] = landmark_id
         building_json['floors'] = [floor.name for floor in floors]
-        building_json['pois'] = [poi.name for poi in pois if poi.type == 'room' or poi.type == 'entrance']
+        building_json['pois'] = [poi.name for poi in pois if poi.type == 'room']
 
         buildings_list.append(building_json)
     return {"results": buildings_list}
