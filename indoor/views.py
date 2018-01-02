@@ -38,10 +38,17 @@ def route(request, landmark_id, start_name, end_name):
     landmark_id = int(landmark_id)
     building = get_object_or_404(Building, landmark__id=landmark_id)
 
+    if end_name == 'exit':
+        try:
+            end = POI.objects.filter(type='entrance', floor__building=building)[0]
+            end_name = end.name
+        except IndexError:
+            raise Http404('Unable to find a route')
+
     try:
         paths,floors = navigation.route(building.name, start_name, end_name)
     except (POI.DoesNotExist, NetworkXNoPath, NetworkXError) as e:
-        raise Http404(e)
+        raise Http404('Unable to find a route')
 
     images = []
     for path, floor in zip(paths, floors):

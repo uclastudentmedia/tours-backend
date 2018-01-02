@@ -105,7 +105,7 @@ def draw_route_image(landmark_id, floor_name, path, start_name, end_name):
         start_coords = (start_centroid.x - text_width / 2,
                 -start_centroid.y - text_height / 2)
         draw.text(start_coords, start_name, font=font, fill=(0, 188, 169, 255))
-    if end.floor == floor and start.type == "room":
+    if end.floor == floor and end.type == "room":
         end_centroid = end_room_data.geom.centroid
         text_width, text_height = draw.textsize(end_name, font=font)
         end_coords = (end_centroid.x - text_width / 2,
