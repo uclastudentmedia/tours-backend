@@ -135,6 +135,9 @@ Response:
 }
 ```
 
+  - `distance`: in miles
+  - `duration`: in minutes
+
 
 ## Outdoor Navigation
 
@@ -184,14 +187,10 @@ Response:
             "2": [
                 "2415",
                 "2400E",
-                "2400D",
-                "EL1-2",
-                "ST1-2"
+                "2400D"
             ],
             "b": [
-                "B105",
-                "ST1-b",
-                "EL1-b"
+                "B105"
             ]
         },
         "landmark_id": 31,
@@ -205,6 +204,12 @@ Get images showing a route between 2 POIs.
 ```
 GET /indoor/route/<landmark-id>/<start-name>/<end-name>
 ```
+
+Route from a POI to an exit.
+```
+GET /indoor/route/<landmark-id>/<start-name>/exit
+```
+
 - `<start-name>` and `<end-name>` are names of POIs found in the
   [building detail](#building-detail) page.
 
