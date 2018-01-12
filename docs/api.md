@@ -78,7 +78,7 @@ Response:
 
 ### Landmark Images
 
-> This is deprecated. Use the urls from [landmark detail](#landmark-detail)
+> Use the urls from [landmark detail](#landmark-detail)
 
 Get an image of a landmark
 

@@ -3,7 +3,7 @@
 The final Apache config file will look something like this. It has the server
 configured for:
 - HTTPS with letsencrypt
-- Mapzen server 
+- Mapzen server (no longer needed)
 - Django WSGI in a virtualenv
 
 Put the config in `/etc/apache2/sites-available/tours-le-ssl.conf` and run
@@ -30,16 +30,16 @@ service apache2 reload
 	</Directory>
 
 	# Port forwarding for Valhalla; port should match valhalla.json
-	<Location /route>
-		ProxyPreserveHost On
-		ProxyPass http://localhost:8080/route
-		ProxyPassReverse http://localhost:8080/route
-	</Location>
-	<Location /optimized_route>
-		ProxyPreserveHost On
-		ProxyPass http://localhost:8080/optimized_route
-		ProxyPassReverse http://localhost:8080/optimized_route
-	</Location>
+	#<Location /route>
+	#	ProxyPreserveHost On
+	#	ProxyPass http://localhost:8080/route
+	#	ProxyPassReverse http://localhost:8080/route
+	#</Location>
+	#<Location /optimized_route>
+	#	ProxyPreserveHost On
+	#	ProxyPass http://localhost:8080/optimized_route
+	#	ProxyPassReverse http://localhost:8080/optimized_route
+	#</Location>
 
 
 	# Django

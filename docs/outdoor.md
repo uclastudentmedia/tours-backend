@@ -1,5 +1,6 @@
 # Valhalla Mapzen Server Setup
 
+### Frontend is migrated to Google Maps. We no longer need to set up mapzen.
 
 ## Installation
 
