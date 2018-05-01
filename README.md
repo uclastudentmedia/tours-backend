@@ -30,4 +30,9 @@ Let's dive into the development process.
 
 As you might imagine, there's no public source of all floor plans for the buildings we wanted. Luckily, UPE was generous enough to provide us with a few floor plans with room labels (thanks UPE!), but for the rest of the floors, we walked around the floors looking for a labelled floor plan or just finding a floor layout and manually going around to label all the room numbers.
 
-Since we didn't have a consistent source of floor plan images, there was no good way of automating the process of putting the floor plan data into the database. We thought it might be possible to use computer vision to detect the rooms in the images, but decided it would be too difficult and take too long. So, we ended up loading the images into [QGIS](https://qgis.org/en/site/) and manually tracing all the room locations and drawing out all the pathways that are walkable.
+Since we didn't have a consistent source of floor plan images, there was no good way of automating the process of putting the floor plan data into the database. We thought it might be possible to use computer vision to detect the rooms in the images, but decided it would be too difficult and take too long. So, we ended up loading the images into [QGIS](https://qgis.org/en/site/) and manually tracing all the room locations, from which we could generate a clean looking floor plan image, like the one below from Boelter 4. 
+
+<img src="media/floor_plans/base/67_4.png" width="450" height="540" alt="Boelter 4 floor plan"/>
+
+We also added the walkable areas as paths, a collection of nodes and edges that make up the graph to navigate on. The rooms are added to this graph as one of the nodes in this graph. The graph is shown superimposed on the rooms below:
+
