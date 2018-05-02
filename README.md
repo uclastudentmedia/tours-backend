@@ -20,7 +20,7 @@ So we ended up making something simpler: if the user is currently inside a class
 
 Unlike outdoor navigation, which includes services like Google Maps and OpenStreetMap, there's not as much existing libraries and other support for indoor navigation, so we did our best to leverage existing libraries, glue them together, and write our own code when we needed to.
 
-First, we needed to obtain floor plans for Boelter/MS and put that data into some format that would allow us to query it in order to do routing from one room to another: this ended up being a Postgres database with [PostGIS](https://postgis.net/), which lets us represent the rooms and pathways as geogrpahic objects that we can do location queries on. Basically, the rooms/pathways become a huge graph that you can run your favourite shortest-distance algorithm on.
+First, we needed to obtain floor plans for Boelter/MS and put that data into some format that would allow us to query it in order to do routing from one room to another: this ended up being a Postgres database with [PostGIS](https://postgis.net/), which lets us represent the rooms and pathways as geographic objects that we can do location queries on. Basically, the rooms/pathways become a huge graph that you can run your favourite shortest-distance algorithm on.
 
 Then, when the user makes an API request for a specific building and start and end room, the server generates the graph of the entire building (luckily, we didn't have that much data), calculates the navigation route, and then uses that route data to generate the image(s) of the floor(s) to show the route.
 
@@ -28,7 +28,7 @@ Let's dive into the development process.
 
 ### Getting the data
 
-As you might imagine, there's no public source of all floor plans for the buildings we wanted. Luckily, UPE was generous enough to provide us with a few floor plans with room labels (thanks UPE!), but for the rest of the floors, we walked around the floors looking for a labelled floor plan or just finding a floor layout and manually going around to label all the room numbers.
+As you might imagine, there's no public source of all floor plans for the buildings we wanted. Luckily, UPE was generous enough to provide us with a few floor plans with room labels (thanks UPE!), but for the rest of the floors, we walked around the floors looking for a labeled floor plan or just finding a floor layout and manually going around to label all the room numbers.
 
 Since we didn't have a consistent source of floor plan images, there was no good way of automating the process of putting the floor plan data into the database. We thought it might be possible to use computer vision to detect the rooms in the images, but decided it would be too difficult and take too long. So, we ended up loading the images into [QGIS](https://qgis.org/en/site/) and manually tracing all the room locations, from which we could generate a clean looking floor plan image, like the one below from Boelter 4. 
 
