@@ -22,7 +22,7 @@ Unlike outdoor navigation, which includes services like Google Maps and OpenStre
 
 First, we needed to obtain floor plans for Boelter/MS and put that data into some format that would allow us to query it in order to do routing from one room to another: this ended up being a Postgres database with [PostGIS](https://postgis.net/), which lets us represent the rooms and pathways as geographic objects that we can do location queries on. Basically, the rooms/pathways become a huge graph that you can run your favourite shortest-distance algorithm on.
 
-Then, when the user makes an API request for a specific building and start and end room, the server generates the graph of the entire building (luckily, we didn't have that much data), calculates the navigation route, and then uses that route data to generate the image(s) of the floor(s) to show the route.
+Then, when the user makes an API request for a specific building and start and end room, the Django server generates the graph of the entire building (luckily, we didn't have that much data), calculates the navigation route, and then uses that route data to generate the image(s) of the floor(s) to show the route.
 
 Let's dive into the development process.
 
@@ -46,8 +46,10 @@ We used the Python package [NetworkX](https://networkx.github.io/) to find the r
 
 Given this list, we can now generate the images showing the route. We used [Pillow](https://pillow.readthedocs.io/en/5.1.x/) to load the base floor plan images, and knowing the pixel locations of the rooms and pathways, we colour in the start and end rooms and draw lines for the paths. We then save the images to files and return their URLs for the frontend to load. Here's what the final result of a route that starts and ends on different floors looks like:
 
-<img src="https://tours.bruinmobile.com/media/floor_plans/cache/67_5_308-803_415-411.png" width="45%"/> <img src="https://tours.bruinmobile.com/media/floor_plans/cache/67_3_497-579_886-977.png" width="45%"/>
+<img src="https://tours.bruinmobile.com/media/floor_plans/cache/67_5_308-803_415-411.png" width="45%" alt="Route image 1"/> <img src="https://tours.bruinmobile.com/media/floor_plans/cache/67_3_497-579_886-977.png" width="45%" alt="Route image 2"/>
 
 ## Wrapping it up
 
-As you can see, the process for generating routing images is quite intensive.
+As you can see, the process for generating routing images is quite intensive. To optimize it a bit, we keep the generated image files around so that if we see a route that we've generated before, we can just load the images directly instead of querying the database, finding a route, and creating new images. To make the project more scalable, we could consider adding more caching, like storing graph data in memory using memcached or redis.
+
+Despite the long development process, it was very rewarding to create a mapping system that pieces together a lot of different components and can help students find their classrooms. If you're interested in the full source code, check out the [indoor](indoor/) folder.
